@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="pl">
+                <!-- ========================================================================= -->
+                <!-- [Gra Adax: Zrekrutuj do GDG]                                              -->
+                <!-- Wersja: 3.1                                                               -->
+                <!-- Autor: Galanonim                                                          -->
+                <!-- ========================================================================= -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adax: Zrekrutuj do GDG</title>
+    <link rel="icon" type="image/png" href="./rest/point.png">
+    <link rel="shortcut icon" type="image/png" href="./rest/point.png">
+    <link rel="apple-touch-icon" href="./rest/point.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gdg-blue: #4285F4;
+            --gdg-red: #EA4335;
+            --gdg-yellow: #FBBC04;
+            --gdg-green: #34A853;
+            --bg-color: #080b12;
+            --card-bg: rgba(14, 20, 32, 0.88);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --primary: #4285F4;
+            --primary-glow: rgba(66, 133, 244, 0.45);
+            --accent-gold: #FBBC04;
+            --accent-green: #34A853;
+            --accent-red: #EA4335;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'Space Grotesk', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(66, 133, 244, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(234, 67, 53, 0.10) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(52, 168, 83, 0.06) 0%, transparent 60%),
+                linear-gradient(to bottom, #06080e, #0c111c);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #game-wrapper {
+            position: relative;
+            width: 1200px;
+            max-width: 96vw;
+            height: 750px;
+            max-height: 92vh;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.9),
+                        0 0 0 1px var(--card-border),
+                        0 0 50px -10px rgba(66, 133, 244, 0.25);
+            background: #090d16;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-color: #090e18;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(6, 9, 15, 0.88);
+            backdrop-filter: blur(12px);
+            z-index: 20;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 1;
+            visibility: visible;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .gdg-badge-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 7px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .gdg-dots {
+            display: inline-flex;
+            gap: 5px;
+        }
+        .gdg-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+        .dot-blue { background: var(--gdg-blue); }
+        .dot-red { background: var(--gdg-red); }
+        .dot-yellow { background: var(--gdg-yellow); }
+        .dot-green { background: var(--gdg-green); }
+
+        .game-title {
+            font-size: 50px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff 15%, var(--gdg-blue) 45%, var(--gdg-yellow) 75%, var(--gdg-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 580px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gdg-blue) 0%, #1a73e8 100%);
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            padding: 16px 44px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px -5px var(--primary-glow);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 35px -3px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+            transform: translateY(1px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--gdg-red) 0%, #c5221f 100%);
+            box-shadow: 0 10px 25px -5px rgba(234, 67, 53, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--gdg-green) 0%, #1e8e3e 100%);
+            box-shadow: 0 10px 25px -5px rgba(52, 168, 83, 0.4);
+        }
+
+        .controls-card {
+            margin-top: 32px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px 26px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .key-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        #game-hud {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hud-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            pointer-events: auto;
+        }
+
+        .hud-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            padding: 9px 18px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .hud-stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hud-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .hud-icon.level {
+            background: rgba(66, 133, 244, 0.15);
+            color: var(--gdg-blue);
+            border: 1px solid rgba(66, 133, 244, 0.35);
+        }
+
+        .hud-icon.score {
+            background: rgba(251, 188, 4, 0.15);
+            color: var(--gdg-yellow);
+            border: 1px solid rgba(251, 188, 4, 0.35);
+        }
+
+        .hud-icon.recruits {
+            background: rgba(52, 168, 83, 0.15);
+            color: var(--gdg-green);
+            border: 1px solid rgba(52, 168, 83, 0.35);
+        }
+
+        .hud-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .hud-value {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .hud-level-desc {
+            font-size: 11px;
+            color: var(--gdg-blue);
+            font-weight: 600;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lives-container {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .heart {
+            font-size: 20px;
+            color: var(--gdg-red);
+            filter: drop-shadow(0 0 6px rgba(234, 67, 53, 0.6));
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .heart.lost {
+            opacity: 0.25;
+            filter: grayscale(1);
+            transform: scale(0.85);
+        }
+
+        .recruit-progress-bar {
+            width: 120px;
+            height: 7px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .recruit-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gdg-green), var(--gdg-blue));
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        .btn-icon {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-icon:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #level-cleared-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 9, 15, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s ease;
+        }
+
+        #level-cleared-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .level-card {
+            background: #111827;
+            border: 2px solid var(--gdg-green);
+            border-radius: 20px;
+            padding: 36px 48px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(52, 168, 83, 0.3);
+            transform: scale(0.92);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 480px;
+        }
+
+        #level-cleared-modal.active .level-card {
+            transform: scale(1);
+        }
+
+        .game-over-badge {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: rgba(234, 67, 53, 0.15);
+            border: 2px solid var(--gdg-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 30px rgba(234, 67, 53, 0.4);
+            animation: pulse-danger 1.5s infinite;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .victory-badge {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: rgba(251, 188, 4, 0.15);
+            border: 2px solid var(--gdg-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 35px rgba(251, 188, 4, 0.45);
+            animation: bounce 1.2s infinite alternate ease-in-out;
+        }
+
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-8px); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin: 22px 0 32px 0;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .stat-box-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-box-value {
+            font-family: var(--font-mono);
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        #easter-egg-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 7, 13, 0.90);
+            backdrop-filter: blur(14px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #easter-egg-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #111726;
+            border: 2px solid rgba(66, 133, 244, 0.5);
+            border-radius: 24px;
+            padding: 34px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 50px rgba(66, 133, 244, 0.3);
+            position: relative;
+            transform: scale(0.92);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #easter-egg-modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(234, 67, 53, 0.2);
+            color: var(--gdg-red);
+            border-color: rgba(234, 67, 53, 0.4);
+        }
+
+        .boss-photo-wrapper {
+            position: relative;
+            width: 210px;
+            height: 210px;
+            margin: 0 auto 22px auto;
+            border-radius: 50%;
+            padding: 6px;
+            background: linear-gradient(135deg, var(--gdg-blue), var(--gdg-red), var(--gdg-yellow), var(--gdg-green));
+            box-shadow: 0 0 35px rgba(66, 133, 244, 0.4);
+        }
+
+        .boss-photo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            background: #1e293b;
+        }
+
+        .boss-badge {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gdg-yellow), #f59e0b);
+            color: #111;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 1px;
+            padding: 5px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        .easter-title {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .easter-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        .easter-hint {
+            margin-top: 14px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.35);
+            font-family: var(--font-mono);
+            letter-spacing: 0.5px;
+        }
+
+        .easter-hint span {
+            color: var(--gdg-blue);
+            font-weight: bold;
+        }
+
+        #leaderboard-modal {
+            position: absolute;
+            inset: 0;
+            background: rgba(4, 7, 13, 0.92);
+            backdrop-filter: blur(14px);
+            z-index: 110;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #leaderboard-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .leaderboard-table-container {
+            width: 100%;
+            max-height: 280px;
+            overflow-y: auto;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--card-border);
+            margin: 14px 0 20px 0;
+        }
+
+        .leaderboard-table-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .leaderboard-table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .leaderboard-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            padding: 10px 14px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .leaderboard-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-family: var(--font-mono);
+        }
+
+        .leaderboard-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .rank-1 { color: var(--gdg-yellow); font-weight: 900; }
+        .rank-2 { color: #cbd5e1; font-weight: 800; }
+        .rank-3 { color: #f97316; font-weight: 800; }
+        .rank-highlight {
+            background: rgba(66, 133, 244, 0.22) !important;
+            border-left: 3px solid var(--gdg-blue);
+        }
+
+        .menu-action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 640px;
+            margin-bottom: 8px;
+        }
+
+        .btn-endless {
+            background: linear-gradient(135deg, var(--gdg-yellow) 0%, #ea8600 100%) !important;
+            color: #0b0f19 !important;
+            box-shadow: 0 10px 25px -5px rgba(251, 188, 4, 0.45) !important;
+        }
+
+        .btn-endless:hover {
+            box-shadow: 0 15px 35px -3px rgba(251, 188, 4, 0.55) !important;
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-wrapper">
+        
+        <canvas id="gameCanvas" width="1200" height="750"></canvas>
+
+        <div id="game-hud" style="display: none;">
+            <div class="hud-group">
+                <div class="hud-panel">
+                    <div class="hud-stat">
+                        <div class="hud-icon level">LVL</div>
+                        <div>
+                            <div class="hud-label">Poziom</div>
+                            <div class="hud-value" id="hud-level">1 / 10</div>
+                            <div class="hud-level-desc" id="hud-level-title">Hello World</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-panel">
+                    <div class="hud-stat">
+                        <div class="hud-icon score" style="overflow: hidden; padding: 4px;">
+                            <img src="./rest/point.png" alt="Point" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.outerHTML='★'">
+                        </div>
+                        <div>
+                            <div class="hud-label">Wynik</div>
+                            <div class="hud-value" id="hud-score">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-panel" id="hud-recruits-panel">
+                    <div class="hud-stat">
+                        <div class="hud-icon recruits">👥</div>
+                        <div>
+                            <div class="hud-label">Zrekrutowani do GDG</div>
+                            <div class="hud-value" id="hud-recruits">0 / 3</div>
+                            <div class="recruit-progress-bar">
+                                <div class="recruit-progress-fill" id="hud-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-panel" id="hud-endless-panel" style="display: none;">
+                    <div class="hud-stat">
+                        <div class="hud-icon" style="background: rgba(234, 67, 53, 0.15); color: var(--gdg-red); border: 1px solid rgba(234, 67, 53, 0.35);">👾</div>
+                        <div>
+                            <div class="hud-label">Aktywni Wrogowie</div>
+                            <div class="hud-value" id="hud-endless-enemies">1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-group">
+                <div class="hud-panel">
+                    <div class="hud-stat">
+                        <div class="hud-label" style="margin-right: 6px;">Życia:</div>
+                        <div class="lives-container" id="hud-lives">
+                            <span class="heart">❤️</span>
+                            <span class="heart">❤️</span>
+                            <span class="heart">❤️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-right-controls" style="display: flex; gap: 8px;">
+                    <button class="btn-icon" id="btn-sound-toggle" title="Dźwięk Włącz/Wyłącz">🔊</button>
+                    <button class="btn-icon" id="btn-menu-back" title="Menu Główne">✕</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="main-menu" class="overlay">
+            <div class="gdg-badge-header">
+                <div class="gdg-dots">
+                    <span class="gdg-dot dot-blue"></span>
+                    <span class="gdg-dot dot-red"></span>
+                    <span class="gdg-dot dot-yellow"></span>
+                    <span class="gdg-dot dot-green"></span>
+                </div>
+                <span>Google Developer Groups Community</span>
+            </div>
+
+            <h1 class="game-title">Adax: Zrekrutuj do GDG</h1>
+            <p class="game-subtitle">
+                Zbieraj tech-punkty, rekrutuj developerów do społeczności GDG i omijaj niebezpieczne Bugi 404 oraz wirujące Deadline'y. Wybierz swój tryb rozgrywki:
+            </p>
+
+            <div class="menu-action-buttons">
+                <button class="btn-primary btn-endless" id="btn-start-endless">
+                    <span>⚡ GRA NA PUNKTY (ENDLESS)</span>
+                    <span>➔</span>
+                </button>
+
+                <button class="btn-primary" id="btn-start-campaign">
+                    <span>🎮 KAMPANIA (10 LVL)</span>
+                    <span>➔</span>
+                </button>
+
+                <button class="btn-primary btn-secondary" id="btn-open-leaderboard">
+                    <span>🏆 TABLICA WYNIKÓW</span>
+                </button>
+            </div>
+
+            <div class="controls-card">
+                <div class="control-item">
+                    <span class="key-badge">W A S D</span> lub <span class="key-badge">STRZAŁKI</span>
+                    <span>Sterowanie Adaxem</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-badge">DOTYK</span> lub <span class="key-badge">E</span>
+                    <span>Rekrutacja developera (+50 pkt)</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-badge" style="color: var(--gdg-red); border-color: rgba(234,67,53,0.4);">UWAGA</span>
+                    <span>Omijaj czerwone Bugi i Deadline'y!</span>
+                </div>
+            </div>
+
+            <div class="easter-hint">
+                Wskazówka: W menu głównym wpisz na klawiaturze sekwencję <span>G-D-G</span>...
+            </div>
+        </div>
+
+        <div id="level-cleared-modal">
+            <div class="level-card">
+                <div style="font-size: 38px; margin-bottom: 8px;">🚀</div>
+                <h3 class="game-title" style="font-size: 32px;" id="lvl-clear-title">Poziom 1 Ukończony!</h3>
+                <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px;" id="lvl-clear-desc">
+                    Znakomicie! Zrekrutowałeś wymaganych devów. Przygotuj się na kolejny sprint!
+                </p>
+                <button class="btn-primary btn-success" id="btn-next-level">
+                    <span>NASTĘPNY POZIOM</span>
+                    <span>➔</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="game-over-screen" class="overlay hidden">
+            <div class="game-over-badge">👾</div>
+            <h2 class="game-title" style="font-size: 38px; background: linear-gradient(135deg, #ff7b72, var(--gdg-red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Błędy Przejęły Projekt!
+            </h2>
+            <p class="game-subtitle" id="game-over-desc">
+                Straciłeś wszystkie życia w starciu z Bugami i Deadline'em. Nie poddawaj się!
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-box" id="go-level-box">
+                    <div class="stat-box-label" id="go-level-label">Osiągnięty Poziom</div>
+                    <div class="stat-box-value" id="go-level">1 / 10</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-label">Zdobyte Punkty</div>
+                    <div class="stat-box-value" id="go-score">0</div>
+                </div>
+            </div>
+
+            <div id="endless-save-container" style="display: none; width: 100%; max-width: 440px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border); border-radius: 14px; padding: 18px; margin-bottom: 22px;">
+                <div style="font-size: 14px; font-weight: 700; color: var(--gdg-yellow); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>🏆</span> <span>ZAPISZ WYNIK DO TABLICY:</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="player-name-input" maxlength="18" placeholder="Wpisz swoje imię / nick..." style="flex: 1; padding: 11px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); color: #fff; font-family: var(--font-main); font-size: 14px; outline: none;">
+                    <button class="btn-primary" id="btn-save-score" style="padding: 11px 22px; font-size: 14px; background: var(--gdg-green);">
+                        Zapisz
+                    </button>
+                </div>
+                <div id="save-status-msg" style="font-size: 12px; color: #34d399; margin-top: 8px; font-weight: 600; display: none;"></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                <button class="btn-primary" id="btn-retry-level">
+                    <span id="btn-retry-text">POWTÓRZ POZIOM</span>
+                    <span>↻</span>
+                </button>
+                <button class="btn-primary btn-secondary" id="btn-go-leaderboard">
+                    <span>🏆 TABLICA WYNIKÓW</span>
+                </button>
+                <button class="btn-primary btn-danger" id="btn-go-menu" style="background: rgba(255,255,255,0.08); box-shadow: none;">
+                    <span>MENU GŁÓWNE</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="victory-screen" class="overlay hidden">
+            <div class="victory-badge">🏆</div>
+            <h2 class="game-title" style="font-size: 38px;">GDG Lead Champion!</h2>
+            <p class="game-subtitle">
+                Niewiarygodne! Pokonałeś wszystkie 10 poziomów, zneutralizowałeś błędy produkcyjne i zbudowałeś najpotężniejszą społeczność Google Developer Groups!
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-box-label">Końcowy Wynik</div>
+                    <div class="stat-box-value" id="final-score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-label">Ukończone Poziomy</div>
+                    <div class="stat-box-value" id="final-levels">10 / 10</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-label">Zrekrutowani do GDG</div>
+                    <div class="stat-box-value" id="final-recruits">60+</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-label">Czas Kampanii</div>
+                    <div class="stat-box-value" id="final-time">00:00</div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btn-play-again">
+                <span>ZAGRAJ PONOWNIE OD 1. POZIOMU</span>
+                <span>↻</span>
+            </button>
+        </div>
+
+        <div id="easter-egg-modal">
+            <div class="modal-content">
+                <button class="modal-close-btn" id="easter-modal-close" title="Zamknij (ESC)">✕</button>
+
+                <div class="boss-photo-wrapper">
+                    <img 
+                        id="easter-egg-image" 
+                        class="boss-photo" 
+                        src="./rest/szef.webp" 
+                        alt="Adax Boss" 
+                    />
+                    <div class="boss-badge">ADAX BOSS • GDG LEAD</div>
+                </div>
+
+                <h3 class="easter-title">Szef Wszystkich Szefów GDG!</h3>
+                <p class="easter-desc">
+                    Wpisałeś tajny kod <strong>G-D-G</strong>! Główny lider i prezes Adax osobiście czuwa nad rekrutacją społeczności i przekazuje pozdrowienia dla wszystkich devów!
+                </p>
+
+                <button class="btn-primary" id="easter-btn-ok" style="padding: 12px 32px; font-size: 15px;">
+                    Jasna sprawa, wracam do gry!
+                </button>
+            </div>
+        </div>
+
+        <div id="leaderboard-modal" class="overlay hidden">
+            <div class="modal-content" style="max-width: 580px; width: 92%;">
+                <button class="modal-close-btn" id="leaderboard-modal-close" title="Zamknij (ESC)">✕</button>
+
+                <div style="font-size: 34px; margin-bottom: 6px;">🏆</div>
+                <h3 class="game-title" style="font-size: 28px; margin-bottom: 4px;">Tablica Wyników GDG</h3>
+                <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+                    Ranking Rekrutacji w Trybie na Punkty (Endless Score Attack)
+                </p>
+
+                <div class="leaderboard-table-container">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Gracz</th>
+                                <th>Wynik</th>
+                                <th>Czas</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-tbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: center; margin-top: 18px;">
+                    <button class="btn-primary btn-endless" id="btn-leaderboard-play-now" style="padding: 12px 28px; font-size: 15px;">
+                        <span>GRAJ O REKORD</span> <span>➔</span>
+                    </button>
+                    <button class="btn-primary btn-secondary" id="btn-leaderboard-close" style="padding: 12px 24px; font-size: 15px;">
+                        <span>Zamknij</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const ASSETS_CONFIG = {
+            adaxImage: null,
+            pointImage: "./rest/point.png",
+            npcNeutralImage: null,
+            npcRecruitedImage: null,
+            enemyBugImage: null
+        };
+
+        const LEVELS = [
+            { 
+                level: 1, 
+                name: "Hello World", 
+                recruitsNeeded: 3, 
+                bugs: 0, 
+                deadlines: 0, 
+                chasers: 0,
+                desc: "Wstęp do społeczności GDG. Poznaj sterowanie i zrekrutuj pierwszych entuzjastów!" 
+            },
+            { 
+                level: 2, 
+                name: "Git Init & Commit", 
+                recruitsNeeded: 4, 
+                bugs: 1, 
+                deadlines: 0, 
+                chasers: 0,
+                desc: "Pojawił się pierwszy Bug w kodzie! Omijaj czerwone błędy." 
+            },
+            { 
+                level: 3, 
+                name: "Pull Request & Merge", 
+                recruitsNeeded: 5, 
+                bugs: 2, 
+                deadlines: 0, 
+                chasers: 0,
+                desc: "Konflikty w repozytorium. Dwa Bugi patrolują przestrzeń!" 
+            },
+            { 
+                level: 4, 
+                name: "Deadline Rush", 
+                recruitsNeeded: 5, 
+                bugs: 2, 
+                deadlines: 1, 
+                chasers: 0,
+                desc: "Uwaga na Deadline! Czerwone wirujące zegary odbijają się od ścian." 
+            },
+            { 
+                level: 5, 
+                name: "Code Review Marathon", 
+                recruitsNeeded: 6, 
+                bugs: 3, 
+                deadlines: 1, 
+                chasers: 0,
+                desc: "Błędy mnożą się w logach. Skup się i rekrutuj devów!" 
+            },
+            { 
+                level: 6, 
+                name: "Cloud Deployment", 
+                recruitsNeeded: 6, 
+                bugs: 2, 
+                deadlines: 2, 
+                chasers: 1,
+                desc: "Chmura przyspiesza! Pojawił się Chaser Drone śledzący ruchy Adaxa." 
+            },
+            { 
+                level: 7, 
+                name: "Night Hackathon", 
+                recruitsNeeded: 7, 
+                bugs: 3, 
+                deadlines: 2, 
+                chasers: 1,
+                desc: "Nocny hackathon. Przeciwnicy stają się szybsi, a kawa się kończy!" 
+            },
+            { 
+                level: 8, 
+                name: "Production Release", 
+                recruitsNeeded: 8, 
+                bugs: 4, 
+                deadlines: 2, 
+                chasers: 2,
+                desc: "Wdrożenie na produkcję w piątek po południu! Maksymalna koncentracja." 
+            },
+            { 
+                level: 9, 
+                name: "Kubernetes Chaos", 
+                recruitsNeeded: 8, 
+                bugs: 4, 
+                deadlines: 3, 
+                chasers: 2,
+                desc: "Mikroserwisy wymknęły się spod kontroli! Prawdziwy chaos klastra." 
+            },
+            { 
+                level: 10, 
+                name: "GDG DevFest Finale", 
+                recruitsNeeded: 10, 
+                bugs: 5, 
+                deadlines: 3, 
+                chasers: 3,
+                desc: "Wielki finał DevFest! Zbuduj potężną społeczność GDG i zostań legendą!" 
+            }
+        ];
+
+        const CONFIG = {
+            maxLives: 3,
+            pointsPerCoin: 15,
+            pointsPerRecruit: 50,
+            activeCoinsCount: 7,
+            playerSpeed: 5.0,
+            playerRadius: 22,
+            npcRadius: 19,
+            coinRadius: 13,
+            colors: {
+                blue: '#4285F4',
+                red: '#EA4335',
+                yellow: '#FBBC04',
+                green: '#34A853'
+            }
+        };
+
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playCoin() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(659.25, now);
+                osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.12);
+
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.13);
+            }
+
+            playRecruit() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const notes = [440, 554.37, 659.25, 880];
+                notes.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const start = now + (idx * 0.05);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, start);
+
+                    gain.gain.setValueAtTime(0.16, start);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(start);
+                    osc.stop(start + 0.36);
+                });
+            }
+
+            playDamage() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.26);
+            }
+
+            playLevelCleared() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const chords = [523.25, 659.25, 783.99, 1046.50];
+                chords.forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const t = now + i * 0.09;
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, t);
+                    gain.gain.setValueAtTime(0.2, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.42);
+                });
+            }
+
+            playGameOver() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const freqs = [320, 280, 240, 190];
+                freqs.forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const t = now + i * 0.14;
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, t);
+                    gain.gain.setValueAtTime(0.25, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.36);
+                });
+            }
+
+            playEasterEgg() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const freqs = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                freqs.forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(f, now + i * 0.07);
+                    gain.gain.setValueAtTime(0.09, now + i * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.07);
+                    osc.stop(now + i * 0.07 + 0.22);
+                });
+            }
+
+            playVictory() {
+                if (!this.enabled || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const fanfare = [523, 659, 783, 1046, 783, 1046, 1318];
+                fanfare.forEach((f, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const t = now + (i * 0.11);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, t);
+                    gain.gain.setValueAtTime(0.22, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.42);
+                });
+            }
+        }
+
+        const sound = new SoundFX();
+
+        const loadedImages = {
+            adax: null,
+            point: null,
+            npcNeutral: null,
+            npcRecruited: null,
+            enemyBug: null
+        };
+
+        function preloadImages() {
+            function load(key, src) {
+                if (!src) return;
+                const img = new Image();
+                img.src = src;
+                img.onload = () => { loadedImages[key] = img; };
+            }
+            load('adax', ASSETS_CONFIG.adaxImage);
+            load('point', ASSETS_CONFIG.pointImage);
+            load('npcNeutral', ASSETS_CONFIG.npcNeutralImage);
+            load('npcRecruited', ASSETS_CONFIG.npcRecruitedImage);
+            load('enemyBug', ASSETS_CONFIG.enemyBugImage);
+        }
+        preloadImages();
+
+        class Particle {
+            constructor(x, y, color, speed, size, life, isCodeSymbol = false) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const spd = (Math.random() * 0.8 + 0.2) * speed;
+                this.vx = Math.cos(angle) * spd;
+                this.vy = Math.sin(angle) * spd;
+                this.size = size;
+                this.alpha = 1;
+                this.decay = 1 / life;
+                this.isCodeSymbol = isCodeSymbol;
+                const symbols = ['{ }', '</>', '&&', '||', '=>', 'import', 'const', 'GDG', '01'];
+                this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.96;
+                this.vy *= 0.96;
+                this.alpha -= this.decay;
+                return this.alpha > 0;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                
+                if (this.isCodeSymbol) {
+                    ctx.font = `bold ${this.size * 3}px monospace`;
+                    ctx.fillStyle = this.color;
+                    ctx.fillText(this.symbol, this.x, this.y);
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        class FloatingText {
+            constructor(x, y, text, color) {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.alpha = 1;
+                this.vy = -1.6;
+            }
+
+            update() {
+                this.y += this.vy;
+                this.alpha -= 0.02;
+                return this.alpha > 0;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.font = 'bold 15px "Space Grotesk", sans-serif';
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 5;
+                ctx.textAlign = 'center';
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        class PointCoin {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = CONFIG.coinRadius;
+                this.pulseTime = Math.random() * 10;
+                this.rotation = Math.random() * Math.PI * 2;
+            }
+
+            update(dt) {
+                this.pulseTime += dt * 3.5;
+                this.rotation += dt * 1.5;
+            }
+
+            draw(ctx) {
+                const pulse = Math.sin(this.pulseTime) * 2.2;
+                const currentRadius = this.radius + pulse;
+
+                if (loadedImages.point) {
+                    ctx.save();
+                    ctx.shadowColor = 'rgba(251, 188, 4, 0.7)';
+                    ctx.shadowBlur = 12;
+                    const drawRadius = currentRadius + 3;
+                    ctx.drawImage(
+                        loadedImages.point, 
+                        this.x - drawRadius, 
+                        this.y - drawRadius, 
+                        drawRadius * 2, 
+                        drawRadius * 2
+                    );
+                    ctx.restore();
+                    return;
+                }
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                ctx.shadowColor = 'rgba(251, 188, 4, 0.7)';
+                ctx.shadowBlur = 14;
+
+                ctx.beginPath();
+                const sides = 6;
+                for (let i = 0; i < sides; i++) {
+                    const a = (i * 2 * Math.PI) / sides;
+                    const px = Math.cos(a) * (currentRadius + 3);
+                    const py = Math.sin(a) * (currentRadius + 3);
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(251, 188, 4, 0.2)';
+                ctx.fill();
+
+                const grad = ctx.createLinearGradient(-currentRadius, -currentRadius, currentRadius, currentRadius);
+                grad.addColorStop(0, '#fff4cc');
+                grad.addColorStop(0.4, '#fbbc04');
+                grad.addColorStop(1, '#ea8600');
+
+                ctx.beginPath();
+                for (let i = 0; i < sides; i++) {
+                    const a = (i * 2 * Math.PI) / sides;
+                    const px = Math.cos(a) * currentRadius;
+                    const py = Math.sin(a) * currentRadius;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.lineWidth = 1.8;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+
+                ctx.rotate(-this.rotation);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 11px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('<>', 0, 0);
+
+                ctx.restore();
+            }
+        }
+
+        class Enemy {
+            constructor(type, x, y, speedMult = 1.0) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.radius = type === 'DEADLINE' ? 22 : 18;
+                this.speedMult = speedMult;
+                this.animTimer = Math.random() * 10;
+                this.rotation = 0;
+
+                const angle = Math.random() * Math.PI * 2;
+                if (type === 'BUG') {
+                    const spd = (1.4 + Math.random() * 0.8) * speedMult;
+                    this.vx = Math.cos(angle) * spd;
+                    this.vy = Math.sin(angle) * spd;
+                    this.changeDirTimer = Math.random() * 80 + 40;
+                } else if (type === 'DEADLINE') {
+                    const spd = (2.6 + Math.random() * 0.9) * speedMult;
+                    this.vx = Math.cos(angle) * spd;
+                    this.vy = Math.sin(angle) * spd;
+                } else if (type === 'CHASER') {
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.speed = (1.9 + Math.random() * 0.5) * speedMult;
+                }
+            }
+
+            update(dt, canvasWidth, canvasHeight, playerX, playerY) {
+                this.animTimer += dt * 5;
+                this.rotation += dt * 3;
+
+                if (this.type === 'BUG') {
+                    this.changeDirTimer--;
+                    if (this.changeDirTimer <= 0) {
+                        this.changeDirTimer = Math.random() * 90 + 45;
+                        const angle = Math.random() * Math.PI * 2;
+                        const spd = (1.4 + Math.random() * 0.8) * this.speedMult;
+                        this.vx = Math.cos(angle) * spd;
+                        this.vy = Math.sin(angle) * spd;
+                    }
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    const m = this.radius + 10;
+                    if (this.x < m) { this.x = m; this.vx *= -1; }
+                    if (this.x > canvasWidth - m) { this.x = canvasWidth - m; this.vx *= -1; }
+                    if (this.y < m) { this.y = m; this.vy *= -1; }
+                    if (this.y > canvasHeight - m) { this.y = canvasHeight - m; this.vy *= -1; }
+
+                } else if (this.type === 'DEADLINE') {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    const m = this.radius + 6;
+                    if (this.x < m) { this.x = m; this.vx *= -1; }
+                    if (this.x > canvasWidth - m) { this.x = canvasWidth - m; this.vx *= -1; }
+                    if (this.y < m) { this.y = m; this.vy *= -1; }
+                    if (this.y > canvasHeight - m) { this.y = canvasHeight - m; this.vy *= -1; }
+
+                } else if (this.type === 'CHASER') {
+                    const dx = playerX - this.x;
+                    const dy = playerY - this.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist > 5) {
+                        this.vx = (dx / dist) * this.speed;
+                        this.vy = (dy / dist) * this.speed;
+                        this.x += this.vx;
+                        this.y += this.vy;
+                    }
+                }
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                if (loadedImages.enemyBug && this.type === 'BUG') {
+                    ctx.drawImage(loadedImages.enemyBug, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+                    ctx.restore();
+                    return;
+                }
+
+                if (this.type === 'BUG') {
+                    ctx.shadowColor = 'rgba(234, 67, 53, 0.7)';
+                    ctx.shadowBlur = 12;
+
+                    ctx.strokeStyle = '#ff7b72';
+                    ctx.lineWidth = 2.5;
+                    const legWiggle = Math.sin(this.animTimer) * 4;
+                    for (let s = -1; s <= 1; s += 2) {
+                        for (let i = -1; i <= 1; i++) {
+                            ctx.beginPath();
+                            ctx.moveTo(s * 8, i * 6);
+                            ctx.lineTo(s * (this.radius + 6), i * 8 + (s * legWiggle));
+                            ctx.stroke();
+                        }
+                    }
+
+                    const grad = ctx.createRadialGradient(0, 0, 2, 0, 0, this.radius);
+                    grad.addColorStop(0, '#ff6b6b');
+                    grad.addColorStop(0.7, '#ea4335');
+                    grad.addColorStop(1, '#990000');
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 9px "Space Grotesk", sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('404', 0, 0);
+
+                } else if (this.type === 'DEADLINE') {
+                    ctx.rotate(this.rotation);
+                    ctx.shadowColor = 'rgba(234, 67, 53, 0.9)';
+                    ctx.shadowBlur = 16;
+
+                    ctx.beginPath();
+                    const spikes = 8;
+                    for (let i = 0; i < spikes * 2; i++) {
+                        const r = (i % 2 === 0) ? this.radius + 5 : this.radius - 2;
+                        const a = (i * Math.PI) / spikes;
+                        const px = Math.cos(a) * r;
+                        const py = Math.sin(a) * r;
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = '#c5221f';
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius - 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#111827';
+                    ctx.fill();
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#ea4335';
+                    ctx.stroke();
+
+                    ctx.strokeStyle = '#ffdd57';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(0, -this.radius + 7);
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(this.radius - 8, 0);
+                    ctx.stroke();
+
+                } else if (this.type === 'CHASER') {
+                    ctx.shadowColor = 'rgba(168, 85, 247, 0.8)';
+                    ctx.shadowBlur = 15;
+
+                    const angleToPlayer = Math.atan2(this.vy, this.vx);
+                    ctx.rotate(angleToPlayer);
+
+                    ctx.beginPath();
+                    ctx.moveTo(this.radius + 4, 0);
+                    ctx.lineTo(-this.radius, -this.radius + 2);
+                    ctx.lineTo(-this.radius + 6, 0);
+                    ctx.lineTo(-this.radius, this.radius - 2);
+                    ctx.closePath();
+
+                    const grad = ctx.createLinearGradient(-this.radius, 0, this.radius, 0);
+                    grad.addColorStop(0, '#7928ca');
+                    grad.addColorStop(1, '#ff0080');
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                    ctx.lineWidth = 1.8;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(-this.radius - 2, 0, 4 + Math.sin(this.animTimer * 2) * 2, 0, Math.PI * 2);
+                    ctx.fillStyle = '#00f0ff';
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        class NPC {
+            constructor(id, x, y) {
+                this.id = id;
+                this.x = x;
+                this.y = y;
+                this.radius = CONFIG.npcRadius;
+                this.isRecruited = false;
+                this.recruitIndex = -1;
+
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.changeDirTimer = Math.random() * 120 + 60;
+                this.bobble = Math.random() * Math.PI;
+
+                const tracks = [
+                    { name: 'Android Dev', color: '#34A853', icon: '🤖' },
+                    { name: 'Cloud Expert', color: '#4285F4', icon: '☁️' },
+                    { name: 'AI / ML Pro', color: '#FBBC04', icon: '🧠' },
+                    { name: 'Flutter Dev', color: '#02569B', icon: '📱' },
+                    { name: 'Web Architect', color: '#EA4335', icon: '🌐' },
+                    { name: 'Firebase Dev', color: '#FFCA28', icon: '🔥' }
+                ];
+                this.track = tracks[id % tracks.length];
+            }
+
+            update(dt, canvasWidth, canvasHeight, breadcrumbs) {
+                this.bobble += dt * 4;
+
+                if (!this.isRecruited) {
+                    this.changeDirTimer--;
+                    if (this.changeDirTimer <= 0) {
+                        this.changeDirTimer = Math.random() * 140 + 60;
+                        const angle = Math.random() * Math.PI * 2;
+                        const spd = Math.random() * 1.2 + 0.4;
+                        this.vx = Math.cos(angle) * spd;
+                        this.vy = Math.sin(angle) * spd;
+                    }
+
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    const m = 40;
+                    if (this.x < m) { this.x = m; this.vx *= -1; }
+                    if (this.x > canvasWidth - m) { this.x = canvasWidth - m; this.vx *= -1; }
+                    if (this.y < m) { this.y = m; this.vy *= -1; }
+                    if (this.y > canvasHeight - m) { this.y = canvasHeight - m; this.vy *= -1; }
+
+                } else {
+                    const spacing = 16;
+                    const targetIndex = (this.recruitIndex + 1) * spacing;
+
+                    if (breadcrumbs.length > targetIndex) {
+                        const target = breadcrumbs[targetIndex];
+                        this.x += (target.x - this.x) * 0.3;
+                        this.y += (target.y - this.y) * 0.3;
+                    }
+                }
+            }
+
+            draw(ctx, isPlayerNearby) {
+                const bounce = Math.sin(this.bobble) * 2;
+
+                ctx.save();
+
+                if (!this.isRecruited) {
+                    if (loadedImages.npcNeutral) {
+                        ctx.drawImage(loadedImages.npcNeutral, this.x - this.radius, this.y - this.radius + bounce, this.radius * 2, this.radius * 2);
+                    } else {
+                        ctx.beginPath();
+                        ctx.ellipse(this.x, this.y + this.radius - 2, this.radius * 0.8, 5, 0, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                        ctx.fill();
+
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y + bounce, this.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = '#334155';
+                        ctx.fill();
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#94a3b8';
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#94a3b8';
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y - 3 + bounce, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.roundRect(this.x - 7, this.y + 4 + bounce, 14, 8, 2);
+                        ctx.fill();
+                    }
+
+                    if (isPlayerNearby) {
+                        ctx.shadowColor = 'rgba(66, 133, 244, 0.9)';
+                        ctx.shadowBlur = 12;
+                        ctx.fillStyle = '#4285F4';
+                        ctx.font = 'bold 12px "Space Grotesk", sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('[E] REKRUTUJ', this.x, this.y - this.radius - 12 + bounce);
+
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius + 8 + Math.sin(this.bobble * 2) * 3, 0, Math.PI * 2);
+                        ctx.strokeStyle = 'rgba(66, 133, 244, 0.6)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+
+                } else {
+                    if (loadedImages.npcRecruited) {
+                        ctx.drawImage(loadedImages.npcRecruited, this.x - this.radius, this.y - this.radius + bounce, this.radius * 2, this.radius * 2);
+                    } else {
+                        ctx.shadowColor = this.track.color;
+                        ctx.shadowBlur = 14;
+
+                        ctx.beginPath();
+                        ctx.ellipse(this.x, this.y + this.radius - 2, this.radius * 0.8, 5, 0, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                        ctx.fill();
+
+                        const grad = ctx.createLinearGradient(
+                            this.x - this.radius, this.y - this.radius,
+                            this.x + this.radius, this.y + this.radius
+                        );
+                        grad.addColorStop(0, this.track.color);
+                        grad.addColorStop(1, '#0f172a');
+
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y + bounce, this.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = grad;
+                        ctx.fill();
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.stroke();
+
+                        ctx.font = '13px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(this.track.icon, this.x, this.y + bounce);
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 9px "Space Grotesk", sans-serif';
+                        ctx.shadowBlur = 4;
+                        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+                        ctx.fillText(this.track.name.split(' ')[0], this.x, this.y - this.radius - 4 + bounce);
+                    }
+                }
+
+                ctx.restore();
+            }
+        }
+
+        class PlayerAdax {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.radius = CONFIG.playerRadius;
+                this.speed = CONFIG.playerSpeed;
+                this.vx = 0;
+                this.vy = 0;
+                this.angle = 0;
+                this.bobble = 0;
+                this.breadcrumbs = [];
+                this.invulnerableTimer = 0; // Nietykalność po trafieniu
+                this.trailParticles = [];
+            }
+
+            update(keys, canvasWidth, canvasHeight, dt) {
+                if (this.invulnerableTimer > 0) {
+                    this.invulnerableTimer -= dt;
+                }
+
+                let dx = 0;
+                let dy = 0;
+
+                if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
+                if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
+                if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+                if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+
+                if (dx !== 0 && dy !== 0) {
+                    const len = Math.hypot(dx, dy);
+                    dx /= len;
+                    dy /= len;
+                }
+
+                this.vx = dx * this.speed;
+                this.vy = dy * this.speed;
+                this.x += this.vx;
+                this.y += this.vy;
+
+                const pad = this.radius + 6;
+                if (this.x < pad) this.x = pad;
+                if (this.x > canvasWidth - pad) this.x = canvasWidth - pad;
+                if (this.y < pad) this.y = pad;
+                if (this.y > canvasHeight - pad) this.y = canvasHeight - pad;
+
+                if (dx !== 0 || dy !== 0) {
+                    this.angle = Math.atan2(dy, dx);
+                    this.bobble += 0.25;
+
+                    if (Math.random() < 0.4) {
+                        this.trailParticles.push({
+                            x: this.x,
+                            y: this.y,
+                            radius: this.radius * 0.7,
+                            alpha: 0.5
+                        });
+                    }
+
+                    const last = this.breadcrumbs[0];
+                    if (!last || Math.hypot(this.x - last.x, this.y - last.y) > 4) {
+                        this.breadcrumbs.unshift({ x: this.x, y: this.y });
+                        if (this.breadcrumbs.length > 350) {
+                            this.breadcrumbs.pop();
+                        }
+                    }
+                }
+
+                this.trailParticles = this.trailParticles.filter(p => {
+                    p.alpha -= 0.05;
+                    return p.alpha > 0;
+                });
+            }
+
+            draw(ctx) {
+                for (let p of this.trailParticles) {
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fillStyle = 'rgba(66, 133, 244, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                if (this.invulnerableTimer > 0 && Math.floor(this.invulnerableTimer * 12) % 2 === 0) {
+                    return;
+                }
+
+                const bounce = Math.sin(this.bobble) * 2;
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                if (loadedImages.adax) {
+                    ctx.rotate(this.angle + Math.PI / 2);
+                    ctx.drawImage(loadedImages.adax, -this.radius, -this.radius + bounce, this.radius * 2, this.radius * 2);
+                    ctx.restore();
+                    return;
+                }
+
+                ctx.beginPath();
+                ctx.ellipse(0, this.radius - 2, this.radius * 0.9, 6, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.fill();
+
+                ctx.shadowColor = 'rgba(66, 133, 244, 0.8)';
+                ctx.shadowBlur = 18;
+
+                ctx.beginPath();
+                ctx.arc(0, bounce, this.radius + 4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(66, 133, 244, 0.14)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(66, 133, 244, 0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                const grad = ctx.createLinearGradient(-this.radius, -this.radius, this.radius, this.radius);
+                grad.addColorStop(0, '#4285F4');
+                grad.addColorStop(0.5, '#1a73e8');
+                grad.addColorStop(1, '#0d47a1');
+
+                ctx.beginPath();
+                ctx.arc(0, bounce, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#e8f0fe';
+                ctx.stroke();
+
+                ctx.rotate(this.angle);
+                ctx.beginPath();
+                ctx.moveTo(this.radius + 3, 0);
+                ctx.lineTo(this.radius - 5, -5);
+                ctx.lineTo(this.radius - 5, 5);
+                ctx.closePath();
+                ctx.fillStyle = '#FBBC04';
+                ctx.fill();
+
+
+                ctx.rotate(-this.angle);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '900 16px "Outfit", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.fillText('A', 0, bounce);
+
+                ctx.restore();
+            }
+        }
+
+
+        class LeaderboardManager {
+            constructor() {
+                this.storageKey = 'adax_gdg_leaderboard_v1';
+                this.defaultScores = [
+                    { name: "Junior Dev", score: 600, time: "01:10", date: "2026-10-23" }
+                ];
+            }
+
+            getScores() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    }
+                } catch (e) {
+                    console.warn("Brak dostępu do localStorage, używam domyślnych wyników:", e);
+                }
+                return [...this.defaultScores];
+            }
+
+            addScore(name, score, time) {
+                const scores = this.getScores();
+                const sanitizedName = (name && name.trim()) ? name.trim().slice(0, 18) : 'Anonimowy Dev';
+                const today = new Date().toISOString().split('T')[0];
+
+                scores.push({
+                    name: sanitizedName,
+                    score: score,
+                    time: time || '00:00',
+                    date: today
+                });
+
+                scores.sort((a, b) => b.score - a.score);
+                const top10 = scores.slice(0, 10);
+
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(top10));
+                } catch (e) {
+                    console.warn("Nie można zapisać do localStorage:", e);
+                }
+                return top10;
+            }
+        }
+
+        const leaderboard = new LeaderboardManager();
+
+        class GameEngine {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+
+                this.mainMenu = document.getElementById('main-menu');
+                this.victoryScreen = document.getElementById('victory-screen');
+                this.gameOverScreen = document.getElementById('game-over-screen');
+                this.levelClearedModal = document.getElementById('level-cleared-modal');
+                this.leaderboardModal = document.getElementById('leaderboard-modal');
+                this.gameHud = document.getElementById('game-hud');
+
+                this.hudLevel = document.getElementById('hud-level');
+                this.hudLevelTitle = document.getElementById('hud-level-title');
+                this.hudScore = document.getElementById('hud-score');
+                this.hudRecruits = document.getElementById('hud-recruits');
+                this.hudProgressFill = document.getElementById('hud-progress-fill');
+                this.hudLives = document.getElementById('hud-lives');
+
+                this.state = 'MENU'; 
+                this.gameMode = 'CAMPAIGN'; 
+                this.currentLevelIndex = 0;
+                this.lives = CONFIG.maxLives;
+                this.score = 0;
+                this.totalRecruitedEver = 0;
+                this.startTime = 0;
+                this.lastTime = performance.now();
+                this.screenShake = 0;
+                this.keys = {};
+
+                this.endlessTimer = 0;
+                this.enemySpawnTimer = 0;
+                this.lastScoreEnemyThreshold = 0;
+                this.lastRunTimeStr = '00:00';
+
+                this.player = null;
+                this.npcs = [];
+                this.enemies = [];
+                this.coins = [];
+                this.particles = [];
+                this.floatingTexts = [];
+
+                this.keyBuffer = [];
+                this.easterEggModal = document.getElementById('easter-egg-modal');
+
+                this.initListeners();
+                this.animate = this.animate.bind(this);
+                requestAnimationFrame(this.animate);
+            }
+
+            initListeners() {
+                const safeAdd = (id, event, handler) => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener(event, handler);
+                };
+
+                window.addEventListener('keydown', (e) => {
+                    this.keys[e.code] = true;
+
+                    if (this.state === 'MENU') {
+                        const k = e.key.toLowerCase();
+                        if (['g', 'd'].includes(k)) {
+                            this.keyBuffer.push(k);
+                            if (this.keyBuffer.length > 3) this.keyBuffer.shift();
+
+                            if (this.keyBuffer.join('') === 'gdg') {
+                                this.triggerEasterEgg();
+                                this.keyBuffer = [];
+                            }
+                        } else if (e.key !== 'Shift' && e.key !== 'Control' && e.key !== 'Alt') {
+                            this.keyBuffer = [];
+                        }
+                    }
+
+                    if (e.key === 'Escape') {
+                        if (this.easterEggModal && this.easterEggModal.classList.contains('active')) {
+                            this.closeEasterEgg();
+                        }
+                        if (this.leaderboardModal && this.leaderboardModal.classList.contains('active')) {
+                            this.hideLeaderboard();
+                        }
+                    }
+
+                    if (this.state === 'PLAYING' && (e.code === 'KeyE' || e.key === 'e' || e.key === 'E')) {
+                        this.tryRecruitNearby();
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    this.keys[e.code] = false;
+                });
+
+                safeAdd('btn-start-endless', 'click', () => {
+                    sound.init();
+                    this.startEndless();
+                });
+
+                safeAdd('btn-start-campaign', 'click', () => {
+                    sound.init();
+                    this.startCampaign();
+                });
+
+                safeAdd('btn-start-game', 'click', () => {
+                    sound.init();
+                    this.startCampaign();
+                });
+
+                safeAdd('btn-open-leaderboard', 'click', () => {
+                    this.showLeaderboard();
+                });
+
+                safeAdd('leaderboard-modal-close', 'click', () => this.hideLeaderboard());
+                safeAdd('btn-leaderboard-close', 'click', () => this.hideLeaderboard());
+                safeAdd('btn-leaderboard-play-now', 'click', () => {
+                    this.hideLeaderboard();
+                    sound.init();
+                    this.startEndless();
+                });
+                if (this.leaderboardModal) {
+                    this.leaderboardModal.addEventListener('click', (e) => {
+                        if (e.target === this.leaderboardModal) this.hideLeaderboard();
+                    });
+                }
+
+                safeAdd('btn-save-score', 'click', () => {
+                    this.saveEndlessScore();
+                });
+
+                const nameInput = document.getElementById('player-name-input');
+                if (nameInput) {
+                    nameInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.saveEndlessScore();
+                        }
+                    });
+                }
+
+                safeAdd('btn-go-leaderboard', 'click', () => {
+                    this.showLeaderboard();
+                });
+
+                safeAdd('btn-next-level', 'click', () => {
+                    this.loadNextLevel();
+                });
+
+                safeAdd('btn-retry-level', 'click', () => {
+                    this.restartCurrentLevel();
+                });
+
+                safeAdd('btn-go-menu', 'click', () => {
+                    this.returnToMenu();
+                });
+
+                safeAdd('btn-play-again', 'click', () => {
+                    if (this.gameMode === 'ENDLESS') {
+                        this.startEndless();
+                    } else {
+                        this.startCampaign();
+                    }
+                });
+
+                safeAdd('btn-menu-back', 'click', () => {
+                    this.returnToMenu();
+                });
+
+                const soundBtn = document.getElementById('btn-sound-toggle');
+                if (soundBtn) {
+                    soundBtn.addEventListener('click', () => {
+                        sound.init();
+                        sound.enabled = !sound.enabled;
+                        soundBtn.textContent = sound.enabled ? '🔊' : '🔇';
+                    });
+                }
+
+                safeAdd('easter-modal-close', 'click', () => this.closeEasterEgg());
+                safeAdd('easter-btn-ok', 'click', () => this.closeEasterEgg());
+                if (this.easterEggModal) {
+                    this.easterEggModal.addEventListener('click', (e) => {
+                        if (e.target === this.easterEggModal) this.closeEasterEgg();
+                    });
+                }
+            }
+
+            triggerEasterEgg() {
+                sound.init();
+                sound.playEasterEgg();
+                this.easterEggModal.classList.add('active');
+            }
+
+            closeEasterEgg() {
+                this.easterEggModal.classList.remove('active');
+            }
+
+            startCampaign() {
+                this.gameMode = 'CAMPAIGN';
+                this.currentLevelIndex = 0;
+                this.lives = CONFIG.maxLives;
+                this.score = 0;
+                this.totalRecruitedEver = 0;
+                this.startTime = performance.now();
+
+                this.mainMenu.classList.add('hidden');
+                this.victoryScreen.classList.add('hidden');
+                this.gameOverScreen.classList.add('hidden');
+                this.levelClearedModal.classList.remove('active');
+                if (this.leaderboardModal) this.leaderboardModal.classList.remove('active');
+                this.gameHud.style.display = 'flex';
+
+                this.initLevel(this.currentLevelIndex);
+            }
+
+            startEndless() {
+                this.state = 'PLAYING';
+                this.gameMode = 'ENDLESS';
+                this.score = 0;
+                this.lives = CONFIG.maxLives;
+                this.totalRecruitedEver = 0;
+                this.endlessTimer = 0;
+                this.enemySpawnTimer = 0;
+                this.lastScoreEnemyThreshold = 0;
+                this.startTime = performance.now();
+
+                this.mainMenu.classList.add('hidden');
+                this.victoryScreen.classList.add('hidden');
+                this.gameOverScreen.classList.add('hidden');
+                this.levelClearedModal.classList.remove('active');
+                if (this.leaderboardModal) this.leaderboardModal.classList.remove('active');
+                this.gameHud.style.display = 'flex';
+
+                this.particles = [];
+                this.floatingTexts = [];
+                this.screenShake = 0;
+
+                this.player = new PlayerAdax(this.canvas.width / 2, this.canvas.height / 2);
+                for (let i = 0; i < 300; i++) {
+                    this.player.breadcrumbs.push({ x: this.player.x, y: this.player.y });
+                }
+
+                this.npcs = [];
+
+                this.enemies = [];
+                const pos = this.getSafeEnemySpawn();
+                this.enemies.push(new Enemy('BUG', pos.x, pos.y, 1.0));
+
+                this.coins = [];
+                for (let i = 0; i < CONFIG.activeCoinsCount; i++) {
+                    this.spawnCoin();
+                }
+
+                this.updateHUD();
+                this.floatingTexts.push(new FloatingText(this.canvas.width / 2, this.canvas.height / 2 - 35, '⚡ TRYB NA PUNKTY - START!', '#fbbc04'));
+            }
+
+            spawnNeutralNPC() {
+                if (this.state !== 'PLAYING') return;
+                let rx, ry, dist;
+                let attempts = 0;
+                do {
+                    rx = Math.random() * (this.canvas.width - 180) + 90;
+                    ry = Math.random() * (this.canvas.height - 180) + 90;
+                    dist = this.player ? Math.hypot(rx - this.player.x, ry - this.player.y) : 200;
+                    attempts++;
+                } while (dist < 140 && attempts < 15);
+
+                const newNpc = new NPC(this.npcs.length, rx, ry);
+                this.npcs.push(newNpc);
+            }
+
+            spawnEndlessEnemy() {
+                if (this.state !== 'PLAYING' || this.gameMode !== 'ENDLESS') return;
+
+                const pos = this.getSafeEnemySpawn();
+                const speedScale = 1.0 + Math.min(0.9, this.endlessTimer / 110);
+
+                const rand = Math.random();
+                let type = 'BUG';
+                let label = 'BUG 404!';
+                if (rand < 0.45) {
+                    type = 'BUG';
+                    label = 'NOWY BUG 404!';
+                } else if (rand < 0.75) {
+                    type = 'DEADLINE';
+                    label = 'WIRUJĄCY DEADLINE!';
+                } else {
+                    type = 'CHASER';
+                    label = 'CHASER DRONE!';
+                }
+
+                this.enemies.push(new Enemy(type, pos.x, pos.y, speedScale));
+
+                this.screenShake = 7;
+                sound.playDamage();
+                this.floatingTexts.push(new FloatingText(pos.x, pos.y - 15, `⚠️ ${label}`, '#ea4335'));
+                this.createConfetti(pos.x, pos.y, '#ea4335', '#ffffff', 18);
+            }
+
+            initLevel(lvlIndex) {
+                this.state = 'PLAYING';
+                const lvlData = LEVELS[lvlIndex];
+
+                this.mainMenu.classList.add('hidden');
+                this.victoryScreen.classList.add('hidden');
+                this.gameOverScreen.classList.add('hidden');
+                this.levelClearedModal.classList.remove('active');
+                if (this.leaderboardModal) this.leaderboardModal.classList.remove('active');
+                this.gameHud.style.display = 'flex';
+
+                this.particles = [];
+                this.floatingTexts = [];
+                this.screenShake = 0;
+
+                this.player = new PlayerAdax(this.canvas.width / 2, this.canvas.height / 2);
+                for (let i = 0; i < 300; i++) {
+                    this.player.breadcrumbs.push({ x: this.player.x, y: this.player.y });
+                }
+
+                this.npcs = [];
+                for (let i = 0; i < lvlData.recruitsNeeded; i++) {
+                    let rx, ry, dist;
+                    do {
+                        rx = Math.random() * (this.canvas.width - 180) + 90;
+                        ry = Math.random() * (this.canvas.height - 180) + 90;
+                        dist = Math.hypot(rx - this.player.x, ry - this.player.y);
+                    } while (dist < 150);
+
+                    this.npcs.push(new NPC(i, rx, ry));
+                }
+
+                this.enemies = [];
+                const speedScale = 1 + (lvlIndex * 0.08);
+
+                for (let i = 0; i < lvlData.bugs; i++) {
+                    const pos = this.getSafeEnemySpawn();
+                    this.enemies.push(new Enemy('BUG', pos.x, pos.y, speedScale));
+                }
+
+                for (let i = 0; i < lvlData.deadlines; i++) {
+                    const pos = this.getSafeEnemySpawn();
+                    this.enemies.push(new Enemy('DEADLINE', pos.x, pos.y, speedScale));
+                }
+
+                for (let i = 0; i < lvlData.chasers; i++) {
+                    const pos = this.getSafeEnemySpawn();
+                    this.enemies.push(new Enemy('CHASER', pos.x, pos.y, speedScale));
+                }
+
+                this.coins = [];
+                for (let i = 0; i < CONFIG.activeCoinsCount; i++) {
+                    this.spawnCoin();
+                }
+
+                this.updateHUD();
+            }
+
+            getSafeEnemySpawn() {
+                let x, y, dist;
+                do {
+                    x = Math.random() * (this.canvas.width - 160) + 80;
+                    y = Math.random() * (this.canvas.height - 160) + 80;
+                    dist = Math.hypot(x - this.player.x, y - this.player.y);
+                } while (dist < 220);
+                return { x, y };
+            }
+
+            spawnCoin() {
+                const margin = 60;
+                const x = Math.random() * (this.canvas.width - margin * 2) + margin;
+                const y = Math.random() * (this.canvas.height - margin * 2) + margin;
+                this.coins.push(new PointCoin(x, y));
+            }
+
+            tryRecruitNearby() {
+                if (!this.player || this.state !== 'PLAYING') return;
+                for (let npc of this.npcs) {
+                    if (!npc.isRecruited) {
+                        const dist = Math.hypot(this.player.x - npc.x, this.player.y - npc.y);
+                        if (dist < this.player.radius + npc.radius + 35) {
+                            this.recruitNPC(npc);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            recruitNPC(npc) {
+                if (npc.isRecruited) return;
+
+                const recruitedCount = this.npcs.filter(n => n.isRecruited).length;
+                npc.isRecruited = true;
+                npc.recruitIndex = recruitedCount;
+
+                this.score += CONFIG.pointsPerRecruit;
+                this.totalRecruitedEver++;
+                sound.playRecruit();
+
+                this.floatingTexts.push(new FloatingText(npc.x, npc.y - 20, `+${CONFIG.pointsPerRecruit} ${npc.track.name}!`, npc.track.color));
+                this.createConfetti(npc.x, npc.y, npc.track.color, '#ffffff', 25);
+
+                this.updateHUD();
+
+                if (this.gameMode === 'CAMPAIGN') {
+                    const currentLvl = LEVELS[this.currentLevelIndex];
+                    const nowRecruited = this.npcs.filter(n => n.isRecruited).length;
+
+                    if (nowRecruited >= currentLvl.recruitsNeeded) {
+                        setTimeout(() => {
+                            this.handleLevelCleared();
+                        }, 400);
+                    }
+                } else if (this.gameMode === 'ENDLESS') {
+                    setTimeout(() => {
+                        this.spawnNeutralNPC();
+                    }, 700);
+                }
+            }
+
+            handleLevelCleared() {
+                sound.playLevelCleared();
+
+                if (this.currentLevelIndex + 1 >= LEVELS.length) {
+                    this.handleGrandVictory();
+                } else {
+                    this.state = 'LEVEL_CLEARED';
+                    const lvl = LEVELS[this.currentLevelIndex];
+                    document.getElementById('lvl-clear-title').textContent = `Poziom ${lvl.level} Ukończony!`;
+                    document.getElementById('lvl-clear-desc').textContent = `Świetnie! Skompletowałeś devów w sprintcie "${lvl.name}". Czas na kolejny etap!`;
+                    this.levelClearedModal.classList.add('active');
+                }
+            }
+
+            loadNextLevel() {
+                this.levelClearedModal.classList.remove('active');
+                this.currentLevelIndex++;
+                this.initLevel(this.currentLevelIndex);
+            }
+
+            restartCurrentLevel() {
+                this.gameOverScreen.classList.add('hidden');
+                if (this.gameMode === 'ENDLESS') {
+                    this.startEndless();
+                } else {
+                    this.lives = CONFIG.maxLives;
+                    this.initLevel(this.currentLevelIndex);
+                }
+            }
+
+            handlePlayerHit() {
+                if (this.player.invulnerableTimer > 0) return;
+
+                this.lives--;
+                this.player.invulnerableTimer = 1.6;
+                this.screenShake = 14;
+                sound.playDamage();
+
+                this.createConfetti(this.player.x, this.player.y, '#ea4335', '#ff7b72', 20);
+                this.floatingTexts.push(new FloatingText(this.player.x, this.player.y - 25, 'HIT! -1 ŻYCIE', '#ea4335'));
+
+                this.updateHUD();
+
+                if (this.lives <= 0) {
+                    this.handleGameOver();
+                }
+            }
+
+            handleGameOver() {
+                this.state = 'GAME_OVER';
+                sound.playGameOver();
+
+                const totalSeconds = Math.floor((performance.now() - this.startTime) / 1000);
+                const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                const secs = String(totalSeconds % 60).padStart(2, '0');
+                this.lastRunTimeStr = `${mins}:${secs}`;
+
+                this.gameHud.style.display = 'none';
+                this.gameOverScreen.classList.remove('hidden');
+
+                const goLevelLabel = document.getElementById('go-level-label');
+                const goLevel = document.getElementById('go-level');
+                const goScore = document.getElementById('go-score');
+                const endlessSaveContainer = document.getElementById('endless-save-container');
+                const btnRetryText = document.getElementById('btn-retry-text');
+
+                if (goScore) goScore.textContent = this.score;
+
+                if (this.gameMode === 'ENDLESS') {
+                    if (goLevelLabel) goLevelLabel.textContent = 'Czas Przetrwania';
+                    if (goLevel) goLevel.textContent = this.lastRunTimeStr;
+                    if (endlessSaveContainer) endlessSaveContainer.style.display = 'block';
+                    if (btnRetryText) btnRetryText.textContent = 'ZAGRAJ PONOWNIE';
+
+                    const nameInput = document.getElementById('player-name-input');
+                    const statusMsg = document.getElementById('save-status-msg');
+                    const saveBtn = document.getElementById('btn-save-score');
+                    if (nameInput) {
+                        nameInput.value = '';
+                        nameInput.focus();
+                    }
+                    if (statusMsg) statusMsg.style.display = 'none';
+                    if (saveBtn) saveBtn.disabled = false;
+                } else {
+                    if (goLevelLabel) goLevelLabel.textContent = 'Osiągnięty Poziom';
+                    if (goLevel) goLevel.textContent = `${this.currentLevelIndex + 1} / ${LEVELS.length}`;
+                    if (endlessSaveContainer) endlessSaveContainer.style.display = 'none';
+                    if (btnRetryText) btnRetryText.textContent = 'POWTÓRZ POZIOM';
+                }
+            }
+
+            saveEndlessScore() {
+                const nameInput = document.getElementById('player-name-input');
+                const saveBtn = document.getElementById('btn-save-score');
+                const statusMsg = document.getElementById('save-status-msg');
+                const rawName = nameInput ? nameInput.value.trim() : '';
+                const name = rawName || 'Anonimowy Dev';
+
+                leaderboard.addScore(name, this.score, this.lastRunTimeStr);
+
+                if (statusMsg) {
+                    statusMsg.textContent = `✓ Zapisano w rankingu jako "${name}"!`;
+                    statusMsg.style.display = 'block';
+                }
+                if (saveBtn) saveBtn.disabled = true;
+
+                sound.playCoin();
+
+                setTimeout(() => {
+                    this.showLeaderboard(name);
+                }, 700);
+            }
+
+            showLeaderboard(highlightName = null) {
+                const scores = leaderboard.getScores();
+                const tbody = document.getElementById('leaderboard-tbody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    scores.forEach((entry, idx) => {
+                        const tr = document.createElement('tr');
+                        if (highlightName && entry.name === highlightName && entry.score === this.score) {
+                            tr.className = 'rank-highlight';
+                        }
+
+                        let rankBadge = `${idx + 1}`;
+                        let rankClass = '';
+                        if (idx === 0) { rankBadge = '🥇 1'; rankClass = 'rank-1'; }
+                        else if (idx === 1) { rankBadge = '🥈 2'; rankClass = 'rank-2'; }
+                        else if (idx === 2) { rankBadge = '🥉 3'; rankClass = 'rank-3'; }
+
+                        const escapeHtml = (str) => {
+                            const d = document.createElement('div');
+                            d.textContent = str;
+                            return d.innerHTML;
+                        };
+
+                        tr.innerHTML = `
+                            <td class="${rankClass}">${rankBadge}</td>
+                            <td style="font-weight: 600; color: #fff;">${escapeHtml(entry.name)}</td>
+                            <td style="color: var(--gdg-yellow); font-weight: 700;">${entry.score} pkt</td>
+                            <td style="color: var(--text-muted);">${entry.time || '--:--'}</td>
+                            <td style="color: var(--text-muted); font-size: 12px;">${entry.date || ''}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                if (this.leaderboardModal) {
+                    this.leaderboardModal.classList.remove('hidden');
+                    this.leaderboardModal.classList.add('active');
+                }
+            }
+
+            hideLeaderboard() {
+                if (this.leaderboardModal) {
+                    this.leaderboardModal.classList.remove('active');
+                    this.leaderboardModal.classList.add('hidden');
+                }
+            }
+
+            handleGrandVictory() {
+                this.state = 'VICTORY';
+                sound.playVictory();
+
+                const totalSeconds = Math.floor((performance.now() - this.startTime) / 1000);
+                const mins = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                const secs = String(totalSeconds % 60).padStart(2, '0');
+
+                document.getElementById('final-score').textContent = this.score;
+                document.getElementById('final-levels').textContent = `10 / 10`;
+                document.getElementById('final-recruits').textContent = this.totalRecruitedEver;
+                document.getElementById('final-time').textContent = `${mins}:${secs}`;
+
+                this.gameHud.style.display = 'none';
+                this.victoryScreen.classList.remove('hidden');
+
+                for (let i = 0; i < 100; i++) {
+                    this.createConfetti(this.canvas.width / 2, this.canvas.height / 3, CONFIG.colors.blue, CONFIG.colors.yellow, 2);
+                }
+            }
+
+            returnToMenu() {
+                this.state = 'MENU';
+                this.mainMenu.classList.remove('hidden');
+                this.victoryScreen.classList.add('hidden');
+                this.gameOverScreen.classList.add('hidden');
+                this.levelClearedModal.classList.remove('active');
+                if (this.leaderboardModal) this.leaderboardModal.classList.remove('active');
+                this.gameHud.style.display = 'none';
+            }
+
+            createConfetti(x, y, col1, col2, count) {
+                for (let i = 0; i < count; i++) {
+                    const color = Math.random() > 0.5 ? col1 : col2;
+                    this.particles.push(new Particle(x, y, color, 4.8, Math.random() * 3 + 2, 45, Math.random() < 0.2));
+                }
+            }
+
+            updateHUD() {
+                const recruitsPanel = document.getElementById('hud-recruits-panel');
+                const endlessPanel = document.getElementById('hud-endless-panel');
+
+                if (this.gameMode === 'CAMPAIGN') {
+                    if (recruitsPanel) recruitsPanel.style.display = 'flex';
+                    if (endlessPanel) endlessPanel.style.display = 'none';
+
+                    const lvl = LEVELS[this.currentLevelIndex];
+                    if (this.hudLevel) this.hudLevel.textContent = `${lvl.level} / ${LEVELS.length}`;
+                    if (this.hudLevelTitle) this.hudLevelTitle.textContent = lvl.name;
+                    if (this.hudScore) this.hudScore.textContent = this.score;
+
+                    const recruited = this.npcs.filter(n => n.isRecruited).length;
+                    if (this.hudRecruits) this.hudRecruits.textContent = `${recruited} / ${lvl.recruitsNeeded}`;
+                    const pct = (recruited / lvl.recruitsNeeded) * 100;
+                    if (this.hudProgressFill) this.hudProgressFill.style.width = `${pct}%`;
+                } else {
+                    if (recruitsPanel) recruitsPanel.style.display = 'none';
+                    if (endlessPanel) endlessPanel.style.display = 'flex';
+
+                    const mins = String(Math.floor(this.endlessTimer / 60)).padStart(2, '0');
+                    const secs = String(Math.floor(this.endlessTimer % 60)).padStart(2, '0');
+                    if (this.hudLevel) this.hudLevel.textContent = `ENDLESS ⚡`;
+                    if (this.hudLevelTitle) this.hudLevelTitle.textContent = `Czas: ${mins}:${secs}`;
+                    if (this.hudScore) this.hudScore.textContent = this.score;
+
+                    const enemiesCountEl = document.getElementById('hud-endless-enemies');
+                    if (enemiesCountEl) enemiesCountEl.textContent = this.enemies.length;
+                }
+
+                let heartsHtml = '';
+                for (let i = 0; i < CONFIG.maxLives; i++) {
+                    if (i < this.lives) {
+                        heartsHtml += '<span class="heart">❤️</span>';
+                    } else {
+                        heartsHtml += '<span class="heart lost">🖤</span>';
+                    }
+                }
+                if (this.hudLives) this.hudLives.innerHTML = heartsHtml;
+            }
+
+            update(dt) {
+                if (this.state !== 'PLAYING') return;
+
+                this.player.update(this.keys, this.canvas.width, this.canvas.height, dt);
+
+                for (let i = this.coins.length - 1; i >= 0; i--) {
+                    const coin = this.coins[i];
+                    coin.update(dt);
+
+                    const dist = Math.hypot(this.player.x - coin.x, this.player.y - coin.y);
+                    if (dist < this.player.radius + coin.radius) {
+                        this.score += CONFIG.pointsPerCoin;
+                        sound.playCoin();
+
+                        this.floatingTexts.push(new FloatingText(coin.x, coin.y - 10, `+${CONFIG.pointsPerCoin}`, '#fbbc04'));
+                        this.createConfetti(coin.x, coin.y, '#fbbc04', '#ffffff', 14);
+
+                        this.coins.splice(i, 1);
+                        this.spawnCoin();
+                        this.updateHUD();
+                    }
+                }
+
+                for (let npc of this.npcs) {
+                    npc.update(dt, this.canvas.width, this.canvas.height, this.player.breadcrumbs);
+
+                    if (!npc.isRecruited) {
+                        const dist = Math.hypot(this.player.x - npc.x, this.player.y - npc.y);
+                        if (dist < this.player.radius + npc.radius + 3) {
+                            this.recruitNPC(npc);
+                        }
+                    }
+                }
+
+                for (let enemy of this.enemies) {
+                    enemy.update(dt, this.canvas.width, this.canvas.height, this.player.x, this.player.y);
+
+                    const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
+                    if (dist < this.player.radius + enemy.radius) {
+                        this.handlePlayerHit();
+                    }
+                }
+
+                if (this.gameMode === 'ENDLESS') {
+                    this.endlessTimer += dt;
+                    this.enemySpawnTimer += dt;
+
+                    const spawnInterval = Math.max(4.5, 11 - (this.enemies.length * 0.4));
+                    if (this.enemySpawnTimer >= spawnInterval && this.enemies.length < 25) {
+                        this.enemySpawnTimer = 0;
+                        this.spawnEndlessEnemy();
+                    }
+
+                    if (this.score - this.lastScoreEnemyThreshold >= 120 && this.enemies.length < 25) {
+                        this.lastScoreEnemyThreshold = this.score;
+                        this.spawnEndlessEnemy();
+                    }
+
+                    this.updateHUD();
+                }
+
+                this.particles = this.particles.filter(p => p.update());
+                this.floatingTexts = this.floatingTexts.filter(t => t.update());
+
+                if (this.screenShake > 0) {
+                    this.screenShake *= 0.88;
+                    if (this.screenShake < 0.2) this.screenShake = 0;
+                }
+            }
+
+            drawBackground() {
+                this.ctx.save();
+
+                this.ctx.strokeStyle = 'rgba(66, 133, 244, 0.04)';
+                this.ctx.lineWidth = 1;
+                const gridSize = 45;
+
+                for (let x = 0; x < this.canvas.width; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+
+                for (let y = 0; y < this.canvas.height; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+
+                const pad = 12;
+                this.ctx.lineWidth = 2.5;
+
+                this.ctx.strokeStyle = 'rgba(66, 133, 244, 0.35)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(pad, pad);
+                this.ctx.lineTo(this.canvas.width - pad, pad);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = 'rgba(234, 67, 53, 0.35)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width - pad, pad);
+                this.ctx.lineTo(this.canvas.width - pad, this.canvas.height - pad);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = 'rgba(251, 188, 4, 0.35)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.canvas.width - pad, this.canvas.height - pad);
+                this.ctx.lineTo(pad, this.canvas.height - pad);
+                this.ctx.stroke();
+
+                this.ctx.strokeStyle = 'rgba(52, 168, 83, 0.35)';
+                this.ctx.beginPath();
+                this.ctx.moveTo(pad, this.canvas.height - pad);
+                this.ctx.lineTo(pad, pad);
+                this.ctx.stroke();
+
+                this.ctx.restore();
+            }
+
+            draw() {
+                this.ctx.save();
+
+                if (this.screenShake > 0) {
+                    const sx = (Math.random() - 0.5) * this.screenShake;
+                    const sy = (Math.random() - 0.5) * this.screenShake;
+                    this.ctx.translate(sx, sy);
+                }
+
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawBackground();
+
+                if (this.state === 'PLAYING' || this.state === 'LEVEL_CLEARED' || this.state === 'VICTORY' || this.state === 'GAME_OVER') {
+                    for (let coin of this.coins) {
+                        coin.draw(this.ctx);
+                    }
+
+                    if (this.npcs.some(n => n.isRecruited)) {
+                        this.ctx.save();
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(this.player.x, this.player.y);
+                        const recruitedNPCs = this.npcs.filter(n => n.isRecruited).sort((a, b) => a.recruitIndex - b.recruitIndex);
+                        for (let r of recruitedNPCs) {
+                            this.ctx.lineTo(r.x, r.y);
+                        }
+                        this.ctx.strokeStyle = 'rgba(66, 133, 244, 0.3)';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.setLineDash([5, 5]);
+                        this.ctx.stroke();
+                        this.ctx.restore();
+                    }
+
+                    for (let npc of this.npcs) {
+                        const isNearby = !npc.isRecruited && Math.hypot(this.player.x - npc.x, this.player.y - npc.y) < this.player.radius + npc.radius + 35;
+                        npc.draw(this.ctx, isNearby);
+                    }
+
+                    for (let enemy of this.enemies) {
+                        enemy.draw(this.ctx);
+                    }
+
+                    this.player.draw(this.ctx);
+
+                    for (let p of this.particles) {
+                        p.draw(this.ctx);
+                    }
+
+                    for (let ft of this.floatingTexts) {
+                        ft.draw(this.ctx);
+                    }
+                }
+
+                this.ctx.restore();
+            }
+
+            animate(timestamp) {
+                const dt = Math.min((timestamp - this.lastTime) / 1000, 0.1);
+                this.lastTime = timestamp;
+
+                this.update(dt);
+                this.draw();
+
+                requestAnimationFrame(this.animate);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new GameEngine();
+        });
+    </script>
+</body>
+</html>
