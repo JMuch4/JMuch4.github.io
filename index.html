@@ -2,7 +2,7 @@
 <html lang="pl">
 <!-- ========================================================================= -->
 <!-- [Gra Adax: Zrekrutuj do GDG]                                              -->
-<!-- Wersja: 4.5 Responsive & Dynamic Backgrounds Edition                      -->
+<!-- Wersja: 5.0 Ultimate Edition                                              -->
 <!-- Autor: Galanonim                                                          -->
 <!-- ========================================================================= -->
 <head>
@@ -539,7 +539,7 @@
 
             <h1 class="game-title">Adax: Zrekrutuj do GDG</h1>
             <p class="game-subtitle">
-                Zbieraj tech-punkty, używaj perki (Kawa, Magnes, Tarcza, Bomba), rekrutuj devów do GDG i omijaj niebezpieczne Bugi 404!
+                Zbieraj tech-punkty (+30), używaj perki (Kawa, Magnes, Tarcza, Bomba), rekrutuj devów do GDG i omijaj niebezpieczne Bugi, Wycieki Pamięci i Glitche!
             </p>
 
             <div class="difficulty-selector">
@@ -567,7 +567,7 @@
             </div>
 
             <div class="controls-card">
-                <div class="control-item"><span class="key-badge">WASD / STRZAŁKI</span> Ruch</div>
+                <div class="control-item"><span class="key-badge">WASD / STRZAŁKI</span> Ruch Adaxem</div>
                 <div class="control-item"><span class="key-badge">E</span> Rekrutuj (+50)</div>
                 <div class="control-item"><span class="key-badge">M</span> Dźwięk</div>
                 <div class="control-item"><span class="key-badge">P / ESC</span> Pauza</div>
@@ -695,7 +695,7 @@
             <div class="modal-content" style="max-width:380px;">
                 <button class="modal-close-btn" id="easter-modal-close">✕</button>
                 <h3 class="game-title" style="font-size: 22px; margin-top:6px;">Pozdrowienia GDG!</h3>
-                <p style="color:var(--text-muted); font-size:12px; margin: 12px 0;">Wpisałeś tajny kod <strong>G-D-G</strong>! Powodzenia w budowaniu społeczności!</p>
+                <p style="color:var(--text-muted); font-size:12px; margin: 12px 0;">Wpisałeś tajny kod <strong>G-D-G</strong>! Adax bierze udział w grze!</p>
                 <button class="btn-primary" id="easter-btn-ok" style="padding: 8px 20px; font-size: 13px;">Wracam do gry!</button>
             </div>
         </div>
@@ -703,41 +703,41 @@
 
     <script>
         const ASSETS_CONFIG = {
-            adaxImage: null,
-            pointImage: "./point.png",
+            adaxImage: "./rest/point.png",
+            pointImage: "./rest/point.png",
             npcNeutralImage: null,
             npcRecruitedImage: null,
             enemyBugImage: null
         };
 
         const LEVELS = [
-            { level: 1, name: "Hello World", recruitsNeeded: 3, bugs: 0, deadlines: 0, chasers: 0, theme: "GRID" },
-            { level: 2, name: "Git Init & Commit", recruitsNeeded: 4, bugs: 1, deadlines: 0, chasers: 0, theme: "GRID" },
-            { level: 3, name: "Pull Request & Merge", recruitsNeeded: 5, bugs: 2, deadlines: 0, chasers: 0, theme: "SYNTH" },
-            { level: 4, name: "Deadline Rush", recruitsNeeded: 5, bugs: 2, deadlines: 1, chasers: 0, theme: "SYNTH" },
-            { level: 5, name: "Code Review Marathon", recruitsNeeded: 6, bugs: 3, deadlines: 1, chasers: 0, theme: "CLOUD" },
-            { level: 6, name: "Cloud Deployment", recruitsNeeded: 6, bugs: 2, deadlines: 2, chasers: 1, theme: "CLOUD" },
-            { level: 7, name: "Night Hackathon", recruitsNeeded: 7, bugs: 3, deadlines: 2, chasers: 1, theme: "MATRIX" },
-            { level: 8, name: "Production Release", recruitsNeeded: 8, bugs: 4, deadlines: 2, chasers: 2, theme: "MATRIX" },
-            { level: 9, name: "Kubernetes Chaos", recruitsNeeded: 8, bugs: 4, deadlines: 3, chasers: 2, theme: "DEVFEST" },
-            { level: 10, name: "GDG DevFest Finale", recruitsNeeded: 10, bugs: 5, deadlines: 3, chasers: 3, theme: "DEVFEST" }
+            { level: 1, name: "Hello World", recruitsNeeded: 3, bugs: 1, deadlines: 0, chasers: 0, glitches: 0, memoryLeaks: 0, gigaBugs: 0, theme: "GRID" },
+            { level: 2, name: "Git Init & Commit", recruitsNeeded: 4, bugs: 1, deadlines: 0, chasers: 0, glitches: 1, memoryLeaks: 0, gigaBugs: 0, theme: "GRID" },
+            { level: 3, name: "Pull Request & Merge", recruitsNeeded: 5, bugs: 2, deadlines: 1, chasers: 0, glitches: 1, memoryLeaks: 0, gigaBugs: 0, theme: "SYNTH" },
+            { level: 4, name: "Deadline Rush", recruitsNeeded: 5, bugs: 2, deadlines: 2, chasers: 1, glitches: 1, memoryLeaks: 0, gigaBugs: 0, theme: "SYNTH" },
+            { level: 5, name: "Code Review Marathon", recruitsNeeded: 6, bugs: 2, deadlines: 1, chasers: 1, glitches: 1, memoryLeaks: 1, gigaBugs: 0, theme: "CLOUD" },
+            { level: 6, name: "Cloud Deployment", recruitsNeeded: 6, bugs: 2, deadlines: 2, chasers: 1, glitches: 2, memoryLeaks: 1, gigaBugs: 0, theme: "CLOUD" },
+            { level: 7, name: "Night Hackathon", recruitsNeeded: 7, bugs: 3, deadlines: 2, chasers: 2, glitches: 1, memoryLeaks: 1, gigaBugs: 0, theme: "MATRIX" },
+            { level: 8, name: "Production Release", recruitsNeeded: 8, bugs: 3, deadlines: 2, chasers: 2, glitches: 2, memoryLeaks: 2, gigaBugs: 1, theme: "MATRIX" },
+            { level: 9, name: "Kubernetes Chaos", recruitsNeeded: 8, bugs: 4, deadlines: 3, chasers: 2, glitches: 2, memoryLeaks: 2, gigaBugs: 1, theme: "DEVFEST" },
+            { level: 10, name: "GDG DevFest Finale", recruitsNeeded: 10, bugs: 4, deadlines: 3, chasers: 3, glitches: 3, memoryLeaks: 2, gigaBugs: 2, theme: "DEVFEST" }
         ];
 
         const CONFIG = {
-            pointsPerCoin: 15,
+            pointsPerCoin: 30, // Zwiększono punkty z 15 na 30
             pointsPerRecruit: 50,
             activeCoinsCount: 7,
             playerBaseSpeed: 330,
-            playerRadius: 22,
+            playerRadius: 24, // Lekko powiększony promień dla grafiki Adaxa
             npcRadius: 19,
-            coinRadius: 13,
+            coinRadius: 17, // Zwiększony promień punktów z 13 na 17
             perkRadius: 16
         };
 
         const DIFFICULTIES = {
-            EASY: { lives: 4, enemySpeedMult: 0.75, label: 'Łatwy' },
+            EASY: { lives: 4, enemySpeedMult: 0.70, label: 'Łatwy' },
             NORMAL: { lives: 3, enemySpeedMult: 1.0, label: 'Normalny' },
-            HARD: { lives: 2, enemySpeedMult: 1.25, label: 'Trudny' }
+            HARD: { lives: 2, enemySpeedMult: 1.45, label: 'Trudny' } // Znaczący wpływ trudności na prędkość
         };
 
         class SoundFX {
@@ -849,6 +849,7 @@
                 img.onload = () => { loadedImages[key] = img; };
             }
             load('point', ASSETS_CONFIG.pointImage);
+            load('adax', ASSETS_CONFIG.adaxImage);
         }
         preloadImages();
 
@@ -857,24 +858,19 @@
                 this.canvas = canvas;
                 this.ctx = canvas.getContext('2d');
                 this.timer = 0;
-
-                // Elements for Backgrounds
                 this.matrixDrops = [];
                 this.cloudNodes = [];
                 this.stars = [];
-
                 this.initElements();
             }
 
             initElements() {
-                // Matrix Rain Drops
                 const cols = Math.floor(this.canvas.width / 20);
                 this.matrixDrops = [];
                 for (let i = 0; i < cols; i++) {
                     this.matrixDrops.push({ x: i * 20, y: Math.random() * this.canvas.height, speed: 60 + Math.random() * 90 });
                 }
 
-                // Cloud Nodes
                 this.cloudNodes = [];
                 for (let i = 0; i < 35; i++) {
                     this.cloudNodes.push({
@@ -886,7 +882,6 @@
                     });
                 }
 
-                // DevFest Stars
                 this.stars = [];
                 const colors = ['#4285F4', '#EA4335', '#FBBC04', '#34A853', '#ffffff'];
                 for (let i = 0; i < 70; i++) {
@@ -909,10 +904,8 @@
                 ctx.save();
 
                 if (theme === "GRID") {
-                    // Cyber Tech Grid
                     ctx.fillStyle = "#070b14";
                     ctx.fillRect(0, 0, w, h);
-
                     ctx.strokeStyle = "rgba(66, 133, 244, 0.08)";
                     ctx.lineWidth = 1;
                     const gridSize = 45;
@@ -924,7 +917,6 @@
                     }
 
                 } else if (theme === "SYNTH") {
-                    // Synthwave Grid
                     const grad = ctx.createLinearGradient(0, 0, 0, h);
                     grad.addColorStop(0, "#0c0817");
                     grad.addColorStop(0.6, "#1a0b2e");
@@ -944,45 +936,31 @@
                     }
 
                 } else if (theme === "CLOUD") {
-                    // Cloud Network
                     ctx.fillStyle = "#060e1a";
                     ctx.fillRect(0, 0, w, h);
-
                     for (let node of this.cloudNodes) {
-                        node.x += node.vx * dt;
-                        node.y += node.vy * dt;
+                        node.x += node.vx * dt; node.y += node.vy * dt;
                         if (node.x < 0 || node.x > w) node.vx *= -1;
                         if (node.y < 0 || node.y > h) node.vy *= -1;
-
-                        ctx.beginPath();
-                        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                        ctx.fillStyle = "rgba(66, 133, 244, 0.6)";
-                        ctx.fill();
+                        ctx.beginPath(); ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = "rgba(66, 133, 244, 0.6)"; ctx.fill();
                     }
-
                     for (let i = 0; i < this.cloudNodes.length; i++) {
                         for (let j = i + 1; j < this.cloudNodes.length; j++) {
-                            const n1 = this.cloudNodes[i];
-                            const n2 = this.cloudNodes[j];
+                            const n1 = this.cloudNodes[i]; const n2 = this.cloudNodes[j];
                             const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
                             if (dist < 140) {
-                                ctx.beginPath();
-                                ctx.moveTo(n1.x, n1.y);
-                                ctx.lineTo(n2.x, n2.y);
+                                ctx.beginPath(); ctx.moveTo(n1.x, n1.y); ctx.lineTo(n2.x, n2.y);
                                 ctx.strokeStyle = `rgba(52, 168, 83, ${0.25 * (1 - dist / 140)})`;
-                                ctx.lineWidth = 1;
-                                ctx.stroke();
+                                ctx.lineWidth = 1; ctx.stroke();
                             }
                         }
                     }
 
                 } else if (theme === "MATRIX") {
-                    // Matrix Rain
                     ctx.fillStyle = "rgba(4, 10, 8, 0.95)";
                     ctx.fillRect(0, 0, w, h);
-
-                    ctx.fillStyle = "#34A853";
-                    ctx.font = "12px monospace";
+                    ctx.fillStyle = "#34A853"; ctx.font = "12px monospace";
                     const chars = "01GDGCODE";
                     for (let drop of this.matrixDrops) {
                         drop.y += drop.speed * dt;
@@ -992,21 +970,14 @@
                     }
 
                 } else if (theme === "DEVFEST" || theme === "ENDLESS") {
-                    // Cosmic DevFest Starfield
                     ctx.fillStyle = "#050711";
                     ctx.fillRect(0, 0, w, h);
-
                     for (let star of this.stars) {
                         star.y += star.z * 25 * dt;
                         if (star.y > h) star.y = 0;
-
-                        ctx.beginPath();
-                        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                        ctx.fillStyle = star.color;
-                        ctx.shadowBlur = 8;
-                        ctx.shadowColor = star.color;
-                        ctx.fill();
-                        ctx.shadowBlur = 0;
+                        ctx.beginPath(); ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                        ctx.fillStyle = star.color; ctx.shadowBlur = 8; ctx.shadowColor = star.color;
+                        ctx.fill(); ctx.shadowBlur = 0;
                     }
                 }
 
@@ -1089,74 +1060,183 @@
         }
 
         class PointCoin {
-            constructor(x, y) { this.x = x; this.y = y; this.radius = CONFIG.coinRadius; this.pulseTime = Math.random() * 10; }
+            constructor(x, y) { 
+                this.x = x; 
+                this.y = y; 
+                this.radius = CONFIG.coinRadius; 
+                this.pulseTime = Math.random() * 10; 
+            }
 
             update(dt, player, isMagnetActive) {
                 this.pulseTime += dt * 3.5;
                 if (isMagnetActive && player) {
                     const dx = player.x - this.x; const dy = player.y - this.y;
                     const dist = Math.hypot(dx, dy);
-                    if (dist < 300 && dist > 1) {
-                        this.x += (dx / dist) * 420 * dt;
-                        this.y += (dy / dist) * 420 * dt;
+                    if (dist < 320 && dist > 1) {
+                        this.x += (dx / dist) * 450 * dt;
+                        this.y += (dy / dist) * 450 * dt;
                     }
                 }
             }
 
             draw(ctx) {
-                const r = this.radius + Math.sin(this.pulseTime) * 2;
-                if (loadedImages.point) {
-                    ctx.drawImage(loadedImages.point, this.x - r, this.y - r, r * 2, r * 2);
-                    return;
-                }
+                const r = this.radius + Math.sin(this.pulseTime) * 2.5;
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-                ctx.fillStyle = '#fbbc04'; ctx.fill();
-                ctx.lineWidth = 2; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+
+                // Efekt poświaty pod monetą
+                ctx.shadowColor = '#fbbc04';
+                ctx.shadowBlur = 12;
+
+                if (loadedImages.point) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(loadedImages.point, -r, -r, r * 2, r * 2);
+                    ctx.restore();
+
+                    // Grubasna BIAŁA OBRAMÓWKA na monecie (zgodnie z życzeniem)
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.lineWidth = 3.5;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = '#fbbc04';
+                    ctx.stroke();
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fbbc04';
+                    ctx.fill();
+                    ctx.lineWidth = 3.5;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                }
                 ctx.restore();
             }
         }
 
         class Enemy {
             constructor(type, x, y, speedMult = 1.0) {
-                this.type = type; this.x = x; this.y = y;
-                this.radius = type === 'DEADLINE' ? 22 : 18;
-                this.speedMult = speedMult; this.rotation = 0;
+                this.type = type; 
+                this.x = x; 
+                this.y = y;
+                this.speedMult = speedMult; 
+                this.rotation = 0;
+                this.pulseTimer = 0;
+
                 const angle = Math.random() * Math.PI * 2;
-                const baseSpd = type === 'DEADLINE' ? 160 : 95;
-                this.vx = Math.cos(angle) * baseSpd * speedMult;
-                this.vy = Math.sin(angle) * baseSpd * speedMult;
+
+                if (type === 'GIGA_BUG') {
+                    this.radius = 30;
+                    this.vx = Math.cos(angle) * 130 * speedMult;
+                    this.vy = Math.sin(angle) * 130 * speedMult;
+                } else if (type === 'MEMORY_LEAK') {
+                    this.radius = 24;
+                    this.vx = Math.cos(angle) * 70 * speedMult;
+                    this.vy = Math.sin(angle) * 70 * speedMult;
+                } else if (type === 'GLITCH') {
+                    this.radius = 17;
+                    this.vx = Math.cos(angle) * 150 * speedMult;
+                    this.vy = Math.sin(angle) * 150 * speedMult;
+                } else if (type === 'DEADLINE') {
+                    this.radius = 22;
+                    this.vx = Math.cos(angle) * 170 * speedMult;
+                    this.vy = Math.sin(angle) * 170 * speedMult;
+                } else {
+                    // BUG / CHASER
+                    this.radius = 18;
+                    this.vx = Math.cos(angle) * 100 * speedMult;
+                    this.vy = Math.sin(angle) * 100 * speedMult;
+                }
+
                 this.changeDirTimer = Math.random() * 1.5 + 0.5;
             }
 
-            update(dt, canvasWidth, canvasHeight, playerX, playerY, globalSpeedFactor) {
+            update(dt, canvasWidth, canvasHeight, playerX, playerY, globalSpeedFactor, isEndless = false) {
                 this.rotation += dt * 3;
+                this.pulseTimer += dt * 4;
                 const spdFactor = globalSpeedFactor;
 
+                // Ulepszony i bardziej dynamiczny ruch w trybie Endless oraz ogólne sterowanie
                 if (this.type === 'BUG') {
                     this.changeDirTimer -= dt;
                     if (this.changeDirTimer <= 0) {
-                        this.changeDirTimer = Math.random() * 1.5 + 0.8;
+                        this.changeDirTimer = Math.random() * (isEndless ? 1.0 : 1.6) + 0.5;
                         const angle = Math.random() * Math.PI * 2;
-                        const spd = (90 + Math.random() * 50) * this.speedMult;
-                        this.vx = Math.cos(angle) * spd; this.vy = Math.sin(angle) * spd;
+                        const spd = (90 + Math.random() * 60) * this.speedMult;
+                        this.vx = Math.cos(angle) * spd;
+                        this.vy = Math.sin(angle) * spd;
                     }
-                    this.x += this.vx * dt * spdFactor; this.y += this.vy * dt * spdFactor;
+                    this.x += this.vx * dt * spdFactor;
+                    this.y += this.vy * dt * spdFactor;
 
                 } else if (this.type === 'DEADLINE') {
-                    this.x += this.vx * dt * spdFactor; this.y += this.vy * dt * spdFactor;
+                    this.x += this.vx * dt * spdFactor;
+                    this.y += this.vy * dt * spdFactor;
 
                 } else if (this.type === 'CHASER') {
-                    const dx = playerX - this.x; const dy = playerY - this.y;
+                    const dx = playerX - this.x;
+                    const dy = playerY - this.y;
                     const dist = Math.hypot(dx, dy);
                     if (dist > 5) {
-                        const chaserSpd = 115 * this.speedMult;
-                        this.vx = (dx / dist) * chaserSpd; this.vy = (dy / dist) * chaserSpd;
-                        this.x += this.vx * dt * spdFactor; this.y += this.vy * dt * spdFactor;
+                        const chaserSpd = (125 + (isEndless ? 20 : 0)) * this.speedMult;
+                        this.vx = (dx / dist) * chaserSpd;
+                        this.vy = (dy / dist) * chaserSpd;
+                        this.x += this.vx * dt * spdFactor;
+                        this.y += this.vy * dt * spdFactor;
                     }
+
+                } else if (this.type === 'GLITCH') {
+                    // Nowy Wróg: Glitch - Zmienia gwałtownie pozycję i pozycjonuje się skokowo
+                    this.changeDirTimer -= dt;
+                    if (this.changeDirTimer <= 0) {
+                        this.changeDirTimer = Math.random() * 0.6 + 0.3;
+                        const angle = Math.random() * Math.PI * 2;
+                        const spd = (180 + Math.random() * 90) * this.speedMult;
+                        this.vx = Math.cos(angle) * spd;
+                        this.vy = Math.sin(angle) * spd;
+                    }
+                    this.x += this.vx * dt * spdFactor;
+                    this.y += this.vy * dt * spdFactor;
+
+                } else if (this.type === 'MEMORY_LEAK') {
+                    // Nowy Wróg: Wyciek Pamięci - Ciężki, pulsujący i płynnie podążający
+                    const dx = playerX - this.x;
+                    const dy = playerY - this.y;
+                    const dist = Math.hypot(dx, dy);
+                    const mlSpeed = (75 + Math.sin(this.pulseTimer) * 20) * this.speedMult;
+                    if (dist > 5) {
+                        this.vx += (dx / dist) * 180 * dt;
+                        this.vy += (dy / dist) * 180 * dt;
+                        const curSpd = Math.hypot(this.vx, this.vy);
+                        if (curSpd > mlSpeed) {
+                            this.vx = (this.vx / curSpd) * mlSpeed;
+                            this.vy = (this.vy / curSpd) * mlSpeed;
+                        }
+                    }
+                    this.x += this.vx * dt * spdFactor;
+                    this.y += this.vy * dt * spdFactor;
+
+                } else if (this.type === 'GIGA_BUG') {
+                    // Nowy Wróg: Giga Bug (Mini Boss) - Duży, szybki i groźny
+                    this.changeDirTimer -= dt;
+                    if (this.changeDirTimer <= 0) {
+                        this.changeDirTimer = Math.random() * 1.8 + 0.8;
+                        const dx = playerX - this.x;
+                        const dy = playerY - this.y;
+                        const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.8;
+                        const spd = 140 * this.speedMult;
+                        this.vx = Math.cos(angle) * spd;
+                        this.vy = Math.sin(angle) * spd;
+                    }
+                    this.x += this.vx * dt * spdFactor;
+                    this.y += this.vy * dt * spdFactor;
                 }
 
+                // Odbicia od ścian
                 const m = this.radius + 6;
                 if (this.x < m) { this.x = m; this.vx *= -1; }
                 if (this.x > canvasWidth - m) { this.x = canvasWidth - m; this.vx *= -1; }
@@ -1188,6 +1268,31 @@
                     ctx.fillStyle = '#a855f7';
                     ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
                     ctx.lineWidth = 2; ctx.strokeStyle = '#00f0ff'; ctx.stroke();
+
+                } else if (this.type === 'GLITCH') {
+                    // Wygląd Glitcha
+                    ctx.fillStyle = '#d946ef';
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.lineWidth = 2.5; ctx.strokeStyle = '#06b6d4'; ctx.stroke();
+                    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10px monospace';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('ERR', 0, 0);
+
+                } else if (this.type === 'MEMORY_LEAK') {
+                    // Wygląd Wycieku Pamięci
+                    const pulseR = this.radius + Math.sin(this.pulseTimer) * 3;
+                    ctx.fillStyle = 'rgba(234, 179, 8, 0.85)';
+                    ctx.beginPath(); ctx.arc(0, 0, pulseR, 0, Math.PI * 2); ctx.fill();
+                    ctx.lineWidth = 3; ctx.strokeStyle = '#f59e0b'; ctx.stroke();
+                    ctx.fillStyle = '#000'; ctx.font = 'bold 9px sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('RAM', 0, 0);
+
+                } else if (this.type === 'GIGA_BUG') {
+                    // Wygląd Giga Buga
+                    ctx.fillStyle = '#7f1d1d';
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.lineWidth = 4; ctx.strokeStyle = '#ef4444'; ctx.stroke();
+                    ctx.fillStyle = '#ffdd57'; ctx.font = '900 12px sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('BOSS', 0, 0);
                 }
 
                 ctx.restore();
@@ -1295,18 +1400,35 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
+                // Tarcza ochronna wokół gracza
                 if (shieldsCount > 0) {
-                    ctx.beginPath(); ctx.arc(0, 0, this.radius + 7, 0, Math.PI * 2);
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius + 8, 0, Math.PI * 2);
                     ctx.strokeStyle = `rgba(0, 240, 255, ${0.4 + shieldsCount * 0.2})`;
                     ctx.lineWidth = 3; ctx.stroke();
                 }
 
-                ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#4285F4'; ctx.fill();
-                ctx.lineWidth = 2.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+                // Renderowanie Zdjęcia ADAXA (zamiast samej literki A)
+                if (loadedImages.adax) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                    ctx.clip();
+                    ctx.drawImage(loadedImages.adax, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
+                    ctx.restore();
 
-                ctx.fillStyle = '#ffffff'; ctx.font = '900 15px "Outfit", sans-serif';
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', 0, 0);
+                    // Obramówki Adaxa
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                    ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+                    ctx.lineWidth = 1.5; ctx.strokeStyle = '#4285F4'; ctx.stroke();
+                } else {
+                    // Zapasowe rendering w razie braku pliku graficznego
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4285F4'; ctx.fill();
+                    ctx.lineWidth = 2.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
+                    ctx.fillStyle = '#ffffff'; ctx.font = '900 15px "Outfit", sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', 0, 0);
+                }
+
                 ctx.restore();
             }
         }
@@ -1544,7 +1666,8 @@
                 this.hideOverlays(); this.gameHud.style.display = 'flex';
                 this.particles = []; this.floatingTexts = [];
                 this.player = new PlayerAdax(this.canvas.width / 2, this.canvas.height / 2);
-                this.npcs = []; this.enemies = [new Enemy('BUG', 200, 200, diff.enemySpeedMult)];
+                this.npcs = []; 
+                this.enemies = [new Enemy('BUG', 200, 200, diff.enemySpeedMult)];
                 this.coins = []; this.perks = [];
                 for (let i = 0; i < CONFIG.activeCoinsCount; i++) this.spawnCoin();
                 this.updateHUD();
@@ -1578,6 +1701,9 @@
                 for (let i = 0; i < lvlData.bugs; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('BUG', pos.x, pos.y, spdScale)); }
                 for (let i = 0; i < lvlData.deadlines; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('DEADLINE', pos.x, pos.y, spdScale)); }
                 for (let i = 0; i < lvlData.chasers; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('CHASER', pos.x, pos.y, spdScale)); }
+                for (let i = 0; i < lvlData.glitches; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('GLITCH', pos.x, pos.y, spdScale)); }
+                for (let i = 0; i < lvlData.memoryLeaks; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('MEMORY_LEAK', pos.x, pos.y, spdScale)); }
+                for (let i = 0; i < lvlData.gigaBugs; i++) { const pos = this.getSafePos(200); this.enemies.push(new Enemy('GIGA_BUG', pos.x, pos.y, spdScale)); }
 
                 this.coins = []; this.perks = [];
                 for (let i = 0; i < CONFIG.activeCoinsCount; i++) this.spawnCoin();
@@ -1833,7 +1959,7 @@
 
                 const globalSpeedFactor = this.coffeeTimer > 0 ? 0.5 : 1.0;
                 for (let enemy of this.enemies) {
-                    enemy.update(dt, this.canvas.width, this.canvas.height, this.player.x, this.player.y, globalSpeedFactor);
+                    enemy.update(dt, this.canvas.width, this.canvas.height, this.player.x, this.player.y, globalSpeedFactor, this.gameMode === 'ENDLESS');
                     if (Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y) < this.player.radius + enemy.radius) {
                         this.handlePlayerHit();
                     }
@@ -1842,11 +1968,14 @@
                 if (this.gameMode === 'ENDLESS') {
                     this.endlessTimer += dt; this.enemySpawnTimer += dt;
                     const diff = DIFFICULTIES[this.difficultyKey];
-                    const spawnInterval = Math.max(3.5, 9.5 - (this.enemies.length * 0.3));
-                    if (this.enemySpawnTimer >= spawnInterval && this.enemies.length < 25) {
+                    const spawnInterval = Math.max(2.8, 8.5 - (this.enemies.length * 0.25));
+                    
+                    if (this.enemySpawnTimer >= spawnInterval && this.enemies.length < 28) {
                         this.enemySpawnTimer = 0;
                         const pos = this.getSafePos(220);
-                        this.enemies.push(new Enemy('BUG', pos.x, pos.y, diff.enemySpeedMult));
+                        const enemyTypes = ['BUG', 'DEADLINE', 'CHASER', 'GLITCH', 'MEMORY_LEAK', 'GIGA_BUG'];
+                        const selectedType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+                        this.enemies.push(new Enemy(selectedType, pos.x, pos.y, diff.enemySpeedMult));
                     }
                 }
 
@@ -1856,7 +1985,6 @@
             }
 
             draw(dt) {
-                // Determine theme
                 let currentTheme = "GRID";
                 if (this.gameMode === 'CAMPAIGN') {
                     currentTheme = LEVELS[this.currentLevelIndex].theme;
@@ -1864,7 +1992,6 @@
                     currentTheme = "ENDLESS";
                 }
 
-                // Render Animated Background
                 this.bgRenderer.draw(dt, currentTheme, this.endlessTimer);
 
                 if (['PLAYING', 'PAUSED', 'LEVEL_CLEARED', 'VICTORY', 'GAME_OVER'].includes(this.state)) {
