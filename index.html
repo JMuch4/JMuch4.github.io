@@ -2,16 +2,16 @@
 <html lang="pl">
 <!-- ========================================================================= -->
 <!-- [Gra Adax: Zrekrutuj do GDG]                                              -->
-<!-- Wersja: 5.0 Ultimate Edition                                              -->
+<!-- Wersja: 5.5 Easter Eggs Edition                                           -->
 <!-- Autor: Galanonim                                                          -->
 <!-- ========================================================================= -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adax: Zrekrutuj do GDG</title>
-    <link rel="icon" type="image/png" href="./point.png">
-    <link rel="shortcut icon" type="image/png" href="./point.png">
-    <link rel="apple-touch-icon" href="./point.png">
+    <link rel="icon" type="image/png" href="./rest/point.png">
+    <link rel="shortcut icon" type="image/png" href="./rest/point.png">
+    <link rel="apple-touch-icon" href="./rest/point.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
@@ -124,10 +124,18 @@
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             margin-bottom: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        .gdg-dots { display: inline-flex; gap: 4px; }
-        .gdg-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .gdg-badge-header:hover {
+            transform: scale(1.03);
+            border-color: rgba(66, 133, 244, 0.5);
+        }
+
+        .gdg-dots { display: inline-flex; gap: 4px; cursor: pointer; padding: 2px; }
+        .gdg-dot { width: 8px; height: 8px; border-radius: 50%; transition: transform 0.2s; }
+        .gdg-dots:hover .gdg-dot { transform: scale(1.3); }
         .dot-blue { background: var(--gdg-blue); }
         .dot-red { background: var(--gdg-red); }
         .dot-yellow { background: var(--gdg-yellow); }
@@ -142,6 +150,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .game-subtitle {
@@ -451,6 +461,33 @@
         }
 
         .diff-btn.active { background: var(--gdg-blue); color: #fff; }
+
+        /* Style dla ukrytego Easter Egga JamJar */
+        #jamjar-easter-egg {
+            position: absolute;
+            bottom: 12px;
+            right: 14px;
+            opacity: 0.35;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 25;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #jamjar-easter-egg:hover {
+            opacity: 1;
+            transform: scale(1.35) rotate(12deg);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--gdg-yellow);
+            box-shadow: 0 0 15px rgba(251, 188, 4, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -474,7 +511,7 @@
                 <div class="hud-panel">
                     <div class="hud-stat">
                         <div class="hud-icon score" style="overflow: hidden; padding: 4px;">
-                            <img src="./point.png" alt="Point" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.outerHTML='★'">
+                            <img src="./rest/point.png" alt="Point" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.outerHTML='★'">
                         </div>
                         <div>
                             <div class="hud-label">Wynik</div>
@@ -527,8 +564,8 @@
         </div>
 
         <div id="main-menu" class="overlay">
-            <div class="gdg-badge-header">
-                <div class="gdg-dots">
+            <div class="gdg-badge-header" id="gdg-header-badge" title="Kliknij 7 razy po bonus!">
+                <div class="gdg-dots" id="gdg-dots-clicker">
                     <span class="gdg-dot dot-blue"></span>
                     <span class="gdg-dot dot-red"></span>
                     <span class="gdg-dot dot-yellow"></span>
@@ -537,7 +574,7 @@
                 <span>Google Developer Groups Community</span>
             </div>
 
-            <h1 class="game-title">Adax: Zrekrutuj do GDG</h1>
+            <h1 class="game-title" id="main-game-title" title="Kliknij 3 razy!">Adax: Zrekrutuj do GDG</h1>
             <p class="game-subtitle">
                 Zbieraj tech-punkty (+30), używaj perki (Kawa, Magnes, Tarcza, Bomba), rekrutuj devów do GDG i omijaj niebezpieczne Bugi, Wycieki Pamięci i Glitche!
             </p>
@@ -572,6 +609,12 @@
                 <div class="control-item"><span class="key-badge">M</span> Dźwięk</div>
                 <div class="control-item"><span class="key-badge">P / ESC</span> Pauza</div>
             </div>
+
+            <!-- UKRYTY MINI EASTER EGG JAMJAR -->
+            <a href="https://jamjar.gdgpw.pl/" target="_blank" id="jamjar-easter-egg" title="JamJar GDG PW Secret">
+                <img src="./jamjar.png" alt="JamJar" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'; document.getElementById('jamjar-text-fallback').style.display='inline';">
+                <span id="jamjar-text-fallback" style="display:none; font-size:14px;">🫙</span>
+            </a>
         </div>
 
         <div id="pause-modal">
@@ -691,23 +734,26 @@
             </div>
         </div>
 
+        <!-- PRZYWRÓCONY EASTER EGG Z OBRAZKIEM ADAXA I OPISM -->
         <div id="easter-egg-modal">
-            <div class="modal-content" style="max-width:380px;">
+            <div class="modal-content" style="max-width:400px;">
                 <button class="modal-close-btn" id="easter-modal-close">✕</button>
-                <h3 class="game-title" style="font-size: 22px; margin-top:6px;">Pozdrowienia GDG!</h3>
-                <p style="color:var(--text-muted); font-size:12px; margin: 12px 0;">Wpisałeś tajny kod <strong>G-D-G</strong>! Adax bierze udział w grze!</p>
-                <button class="btn-primary" id="easter-btn-ok" style="padding: 8px 20px; font-size: 13px;">Wracam do gry!</button>
+                <div style="width: 86px; height: 86px; margin: 0 auto 12px; border-radius: 50%; overflow: hidden; border: 3px solid var(--gdg-blue); box-shadow: 0 0 20px rgba(66, 133, 244, 0.6); background:#0f172a;">
+                    <img src="./rest/point.png" alt="Adax GDG" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='./point.png'">
+                </div>
+                <h3 class="game-title" style="font-size: 24px; margin-top:2px;">Pozdrowienia od Adaxa!</h3>
+                <p style="color:var(--text-muted); font-size:13px; margin: 12px 0; line-height: 1.5;">
+                    Wpisałeś tajny kod <strong>G-D-G</strong>! Adax bierze udział w rekrutacji i życzy Ci owocnego kodowania oraz zbudowania największej społeczności GDG! 🚀
+                </p>
+                <button class="btn-primary" id="easter-btn-ok" style="padding: 8px 24px; font-size: 13px;">Wracam do gry!</button>
             </div>
         </div>
     </div>
 
     <script>
         const ASSETS_CONFIG = {
-            adaxImage: "./point.png",
-            pointImage: "./point.png",
-            npcNeutralImage: null,
-            npcRecruitedImage: null,
-            enemyBugImage: null
+            adaxImage: "./rest/point.png",
+            pointImage: "./rest/point.png"
         };
 
         const LEVELS = [
@@ -724,20 +770,20 @@
         ];
 
         const CONFIG = {
-            pointsPerCoin: 30, // Zwiększono punkty z 15 na 30
+            pointsPerCoin: 30, // 30 punktów za monetę
             pointsPerRecruit: 50,
             activeCoinsCount: 7,
             playerBaseSpeed: 330,
-            playerRadius: 24, // Lekko powiększony promień dla grafiki Adaxa
+            playerRadius: 24,
             npcRadius: 19,
-            coinRadius: 17, // Zwiększony promień punktów z 13 na 17
+            coinRadius: 17,
             perkRadius: 16
         };
 
         const DIFFICULTIES = {
             EASY: { lives: 4, enemySpeedMult: 0.70, label: 'Łatwy' },
             NORMAL: { lives: 3, enemySpeedMult: 1.0, label: 'Normalny' },
-            HARD: { lives: 2, enemySpeedMult: 1.45, label: 'Trudny' } // Znaczący wpływ trudności na prędkość
+            HARD: { lives: 2, enemySpeedMult: 1.45, label: 'Trudny' }
         };
 
         class SoundFX {
@@ -841,7 +887,7 @@
 
         const sound = new SoundFX();
 
-        const loadedImages = { adax: null, point: null, npcNeutral: null, npcRecruited: null, enemyBug: null };
+        const loadedImages = { adax: null, point: null };
         function preloadImages() {
             function load(key, src) {
                 if (!src) return;
@@ -1084,7 +1130,6 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
-                // Efekt poświaty pod monetą
                 ctx.shadowColor = '#fbbc04';
                 ctx.shadowBlur = 12;
 
@@ -1096,7 +1141,7 @@
                     ctx.drawImage(loadedImages.point, -r, -r, r * 2, r * 2);
                     ctx.restore();
 
-                    // Grubasna BIAŁA OBRAMÓWKA na monecie (zgodnie z życzeniem)
+                    // Grubasna BIAŁA OBRAMÓWKA monet
                     ctx.beginPath();
                     ctx.arc(0, 0, r, 0, Math.PI * 2);
                     ctx.lineWidth = 3.5;
@@ -1146,7 +1191,6 @@
                     this.vx = Math.cos(angle) * 170 * speedMult;
                     this.vy = Math.sin(angle) * 170 * speedMult;
                 } else {
-                    // BUG / CHASER
                     this.radius = 18;
                     this.vx = Math.cos(angle) * 100 * speedMult;
                     this.vy = Math.sin(angle) * 100 * speedMult;
@@ -1160,7 +1204,6 @@
                 this.pulseTimer += dt * 4;
                 const spdFactor = globalSpeedFactor;
 
-                // Ulepszony i bardziej dynamiczny ruch w trybie Endless oraz ogólne sterowanie
                 if (this.type === 'BUG') {
                     this.changeDirTimer -= dt;
                     if (this.changeDirTimer <= 0) {
@@ -1190,7 +1233,6 @@
                     }
 
                 } else if (this.type === 'GLITCH') {
-                    // Nowy Wróg: Glitch - Zmienia gwałtownie pozycję i pozycjonuje się skokowo
                     this.changeDirTimer -= dt;
                     if (this.changeDirTimer <= 0) {
                         this.changeDirTimer = Math.random() * 0.6 + 0.3;
@@ -1203,7 +1245,6 @@
                     this.y += this.vy * dt * spdFactor;
 
                 } else if (this.type === 'MEMORY_LEAK') {
-                    // Nowy Wróg: Wyciek Pamięci - Ciężki, pulsujący i płynnie podążający
                     const dx = playerX - this.x;
                     const dy = playerY - this.y;
                     const dist = Math.hypot(dx, dy);
@@ -1221,7 +1262,6 @@
                     this.y += this.vy * dt * spdFactor;
 
                 } else if (this.type === 'GIGA_BUG') {
-                    // Nowy Wróg: Giga Bug (Mini Boss) - Duży, szybki i groźny
                     this.changeDirTimer -= dt;
                     if (this.changeDirTimer <= 0) {
                         this.changeDirTimer = Math.random() * 1.8 + 0.8;
@@ -1236,7 +1276,6 @@
                     this.y += this.vy * dt * spdFactor;
                 }
 
-                // Odbicia od ścian
                 const m = this.radius + 6;
                 if (this.x < m) { this.x = m; this.vx *= -1; }
                 if (this.x > canvasWidth - m) { this.x = canvasWidth - m; this.vx *= -1; }
@@ -1270,7 +1309,6 @@
                     ctx.lineWidth = 2; ctx.strokeStyle = '#00f0ff'; ctx.stroke();
 
                 } else if (this.type === 'GLITCH') {
-                    // Wygląd Glitcha
                     ctx.fillStyle = '#d946ef';
                     ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
                     ctx.lineWidth = 2.5; ctx.strokeStyle = '#06b6d4'; ctx.stroke();
@@ -1278,7 +1316,6 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('ERR', 0, 0);
 
                 } else if (this.type === 'MEMORY_LEAK') {
-                    // Wygląd Wycieku Pamięci
                     const pulseR = this.radius + Math.sin(this.pulseTimer) * 3;
                     ctx.fillStyle = 'rgba(234, 179, 8, 0.85)';
                     ctx.beginPath(); ctx.arc(0, 0, pulseR, 0, Math.PI * 2); ctx.fill();
@@ -1287,7 +1324,6 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('RAM', 0, 0);
 
                 } else if (this.type === 'GIGA_BUG') {
-                    // Wygląd Giga Buga
                     ctx.fillStyle = '#7f1d1d';
                     ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
                     ctx.lineWidth = 4; ctx.strokeStyle = '#ef4444'; ctx.stroke();
@@ -1400,14 +1436,12 @@
                 ctx.save();
                 ctx.translate(this.x, this.y);
 
-                // Tarcza ochronna wokół gracza
                 if (shieldsCount > 0) {
                     ctx.beginPath(); ctx.arc(0, 0, this.radius + 8, 0, Math.PI * 2);
                     ctx.strokeStyle = `rgba(0, 240, 255, ${0.4 + shieldsCount * 0.2})`;
                     ctx.lineWidth = 3; ctx.stroke();
                 }
 
-                // Renderowanie Zdjęcia ADAXA (zamiast samej literki A)
                 if (loadedImages.adax) {
                     ctx.save();
                     ctx.beginPath();
@@ -1416,12 +1450,10 @@
                     ctx.drawImage(loadedImages.adax, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
                     ctx.restore();
 
-                    // Obramówki Adaxa
                     ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
                     ctx.lineWidth = 3; ctx.strokeStyle = '#ffffff'; ctx.stroke();
                     ctx.lineWidth = 1.5; ctx.strokeStyle = '#4285F4'; ctx.stroke();
                 } else {
-                    // Zapasowe rendering w razie braku pliku graficznego
                     ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
                     ctx.fillStyle = '#4285F4'; ctx.fill();
                     ctx.lineWidth = 2.5; ctx.strokeStyle = '#ffffff'; ctx.stroke();
@@ -1506,6 +1538,12 @@
                 this.particles = []; this.floatingTexts = [];
                 this.easterEggModal = document.getElementById('easter-egg-modal');
 
+                // Konami & Easter Egg Buffers
+                this.keySequence = [];
+                this.konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
+                this.badgeClickCount = 0;
+                this.titleClickCount = 0;
+
                 this.loadCampaignProgress();
                 this.initListeners();
                 this.updateDifficultyUI();
@@ -1557,8 +1595,47 @@
                     if (el) el.addEventListener(event, handler);
                 };
 
+                // Klawiatura + Easter Egi
                 window.addEventListener('keydown', (e) => {
                     this.keys[e.code] = true;
+
+                    // Bufor do sekwencji (Konami & Słowa)
+                    this.keySequence.push(e.code);
+                    if (this.keySequence.length > 20) this.keySequence.shift();
+
+                    // 1. Easter Egg: Konami Code
+                    if (this.keySequence.join(',').includes(this.konamiCode.join(','))) {
+                        this.keySequence = [];
+                        if (this.state === 'PLAYING') {
+                            const diff = DIFFICULTIES[this.difficultyKey];
+                            this.lives = diff.lives;
+                            this.shields = 3;
+                            sound.playPerk();
+                            this.floatingTexts.push(new FloatingText(this.player.x, this.player.y - 30, '⚡ KONAMI CODE: GOD MODE! ⚡', '#fbbc04'));
+                            this.updateHUD();
+                        }
+                    }
+
+                    // 2. Easter Egg: Wpisanie GDG
+                    const recentKeysStr = this.keySequence.slice(-3).map(k => k.replace('Key', '')).join('');
+                    if (recentKeysStr === 'GDG') {
+                        this.keySequence = [];
+                        this.triggerEasterEgg();
+                    }
+
+                    // 3. Easter Egg: Wpisanie KAWA
+                    const recentKawa = this.keySequence.slice(-4).map(k => k.replace('Key', '')).join('');
+                    if (recentKawa === 'KAWA') {
+                        this.keySequence = [];
+                        sound.playPerk();
+                        if (this.player && this.state === 'PLAYING') {
+                            this.coffeeTimer = 15.0;
+                            this.floatingTexts.push(new FloatingText(this.player.x, this.player.y - 30, '☕ EKSTRA KAWA OD GDG!', '#d97706'));
+                        } else {
+                            alert("☕ Zaparzono kawę GDG! Wszyscy devowie dostają +50% do wydajności!");
+                        }
+                    }
+
                     if (e.code === 'KeyM') {
                         sound.enabled = !sound.enabled;
                         document.getElementById('btn-sound-toggle').textContent = sound.enabled ? '🔊' : '🔇';
@@ -1569,6 +1646,38 @@
                     }
                     if (this.state === 'PLAYING' && (e.code === 'KeyE' || e.key === 'e' || e.key === 'E')) {
                         this.tryRecruitNearby();
+                    }
+                });
+
+                // 4. Easter Egg: Kliknięcie kropek GDG
+                safeAdd('gdg-dots-clicker', 'click', () => {
+                    sound.init(); sound.playCoin();
+                    this.createParticles(this.canvas.width / 2, this.canvas.height / 2, '#4285F4', 15);
+                    this.createParticles(this.canvas.width / 2, this.canvas.height / 2, '#EA4335', 15);
+                    this.createParticles(this.canvas.width / 2, this.canvas.height / 2, '#FBBC04', 15);
+                    this.createParticles(this.canvas.width / 2, this.canvas.height / 2, '#34A853', 15);
+                });
+
+                // 5. Easter Egg: Klikanie w tytuł gry
+                safeAdd('main-game-title', 'click', () => {
+                    this.titleClickCount++;
+                    if (this.titleClickCount >= 3) {
+                        this.titleClickCount = 0;
+                        const titleEl = document.getElementById('main-game-title');
+                        titleEl.style.background = 'linear-gradient(135deg, #fbbc04, #ff007f, #00f0ff)';
+                        titleEl.style.webkitBackgroundClip = 'text';
+                        this.score += 100;
+                        sound.playPerk();
+                        alert("⭐ Złoty Tytuł Odblokowany! Otrzymujesz +100 DARMOWYCH PUNKTÓW na start!");
+                    }
+                });
+
+                // 6. Easter Egg: Klikanie w Nagłówek Badge
+                safeAdd('gdg-header-badge', 'click', () => {
+                    this.badgeClickCount++;
+                    if (this.badgeClickCount >= 7) {
+                        this.badgeClickCount = 0;
+                        alert("🚀 Pozdrowienia od społeczności GDG PW (Politechnika Warszawska) & GDG Warsaw!");
                     }
                 });
 
@@ -1643,21 +1752,29 @@
                 safeAdd('easter-btn-ok', 'click', () => this.closeEasterEgg());
             }
 
+            triggerEasterEgg() {
+                sound.init(); sound.playPerk();
+                this.easterEggModal.classList.add('active');
+            }
+
+            closeEasterEgg() {
+                this.easterEggModal.classList.remove('active');
+            }
+
             pauseGame() { if (this.state === 'PLAYING') { this.state = 'PAUSED'; this.pauseModal.classList.add('active'); } }
             resumeGame() { if (this.state === 'PAUSED') { this.state = 'PLAYING'; this.pauseModal.classList.remove('active'); this.lastTime = performance.now(); } }
-            closeEasterEgg() { this.easterEggModal.classList.remove('active'); }
 
             startCampaign() {
                 this.gameMode = 'CAMPAIGN'; this.currentLevelIndex = this.campaignUnlockedLevel;
                 const diff = DIFFICULTIES[this.difficultyKey];
-                this.lives = diff.lives; this.shields = 0; this.score = 0; this.totalRecruitedEver = 0;
+                this.lives = diff.lives; this.shields = 0; this.score = this.score > 0 ? this.score : 0; this.totalRecruitedEver = 0;
                 this.startTime = performance.now(); this.resetPerks();
                 this.hideOverlays(); this.gameHud.style.display = 'flex';
                 this.initLevel(this.currentLevelIndex);
             }
 
             startEndless() {
-                this.state = 'PLAYING'; this.gameMode = 'ENDLESS'; this.score = 0;
+                this.state = 'PLAYING'; this.gameMode = 'ENDLESS'; this.score = this.score > 0 ? this.score : 0;
                 const diff = DIFFICULTIES[this.difficultyKey];
                 this.lives = diff.lives; this.shields = 0; this.totalRecruitedEver = 0;
                 this.endlessTimer = 0; this.enemySpawnTimer = 0; this.perkSpawnTimer = 0;
@@ -1878,6 +1995,12 @@
                 this.gameOverScreen.classList.add('hidden'); this.levelClearedModal.classList.remove('active');
                 this.pauseModal.classList.remove('active'); this.leaderboardModal.classList.add('hidden');
                 this.gameHud.style.display = 'none'; this.updateCampaignBtnUI();
+            }
+
+            createParticles(x, y, col, count) {
+                for (let i = 0; i < count; i++) {
+                    this.particles.push(new Particle(x, y, col, 3, Math.random() * 3 + 2, 0.6));
+                }
             }
 
             updateHUD() {
